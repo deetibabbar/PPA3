@@ -1,15 +1,6 @@
 import java.util.Random;
 
-/**
- * Provide control over the randomization of the simulation. By using the shared, fixed-seed 
- * randomizer, repeated runs will perform exactly the same (which helps with testing). Set 
- * 'useShared' to false to get different random behaviour every time.
- * 
- * @author David J. Barnes and Michael Kölling
- * @version 7.0
- */
-public class Randomizer
-{
+public class Randomizer {
     // The default seed for control of randomization.
     private static final int SEED = 1111;
     // A shared Random object, if required.

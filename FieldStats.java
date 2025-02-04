@@ -1,18 +1,9 @@
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * This class collects and provides some statistical data on the state 
- * of a field. It is flexible: it will create and maintain a counter 
- * for any class of object that is found within the field.
- * 
- * @author David J. Barnes and Michael Kölling
- * @version 7.0
- */
-public class FieldStats
-{
+public class FieldStats {
     // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
-    private final Map<Class<?>, Counter> counters;
+    private final Map<Class<?>, Counter1> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -38,7 +29,7 @@ public class FieldStats
             generateCounts(field);
         }
         for(Class<?> key : counters.keySet()) {
-            Counter info = counters.get(key);
+            Counter1 info = counters.get(key);
             details.append(info.getName())
                    .append(": ")
                    .append(info.getCount())
@@ -55,7 +46,7 @@ public class FieldStats
     {
         countsValid = false;
         for(Class<?> key : counters.keySet()) {
-            Counter count = counters.get(key);
+            Counter1 count = counters.get(key);
             count.reset();
         }
     }
@@ -66,11 +57,11 @@ public class FieldStats
      */
     public void incrementCount(Class<?> animalClass)
     {
-        Counter count = counters.get(animalClass);
+        Counter1 count = counters.get(animalClass);
         if(count == null) {
             // We do not have a counter for this species yet.
             // Create one.
-            count = new Counter(animalClass.getName());
+            count = new Counter1(animalClass.getName());
             counters.put(animalClass, count);
         }
         count.increment();

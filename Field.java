@@ -1,42 +1,26 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
-/**
- * Represent a rectangular grid of field positions.
- * Each position is able to store a single animal/object.
- * 
- * @author David J. Barnes and Michael Kölling
- * @version 7.0
- */
-public class Field
-{
-    // A random number generator for providing random locations.
+public class Field {
     private static final Random rand = Randomizer.getRandom();
     
-    // The dimensions of the field.
     private final int depth, width;
-    // Animals mapped by location.
     private final Map<Location, Animal> field = new HashMap<>();
-    // The animals.
+
     private final List<Animal> animals = new ArrayList<>();
 
-    /**
-     * Represent a field of the given dimensions.
-     * @param depth The depth of the field.
-     * @param width The width of the field.
-     */
     public Field(int depth, int width)
     {
         this.depth = depth;
         this.width = width;
     }
 
-    /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
-     * be lost.
-     * @param anAnimal The animal to be placed.
-     * @param location Where to place the animal.
-     */
     public void placeAnimal(Animal anAnimal, Location location)
     {
         assert location != null;
@@ -48,21 +32,11 @@ public class Field
         animals.add(anAnimal);
     }
     
-    /**
-     * Return the animal at the given location, if any.
-     * @param location Where in the field.
-     * @return The animal at the given location, or null if there is none.
-     */
     public Animal getAnimalAt(Location location)
     {
         return field.get(location);
     }
 
-    /**
-     * Get a shuffled list of the free adjacent locations.
-     * @param location Get locations adjacent to this.
-     * @return A list of free adjacent locations.
-     */
     public List<Location> getFreeAdjacentLocations(Location location)
     {
         List<Location> free = new LinkedList<>();
@@ -79,16 +53,8 @@ public class Field
         return free;
     }
 
-    /**
-     * Return a shuffled list of locations adjacent to the given one.
-     * The list will not include the location itself.
-     * All locations will lie within the grid.
-     * @param location The location from which to generate adjacencies.
-     * @return A list of locations adjacent to that given.
-     */
     public List<Location> getAdjacentLocations(Location location)
     {
-        // The list of locations to be returned.
         List<Location> locations = new ArrayList<>();
         if(location != null) {
             int row = location.row();
@@ -105,90 +71,103 @@ public class Field
                     }
                 }
             }
-            
-            // Shuffle the list. Several other methods rely on the list
-            // being in a random order.
+
             Collections.shuffle(locations, rand);
         }
         return locations;
     }
 
-    /**
-     * Print out the number of foxes and rabbits in the field.
-     */
     public void fieldStats()
     {
-        int numFoxes = 0, numRabbits = 0;
+        int numOwls = 0, numMice = 0, numDeers = 0, numCats = 0, numWolves = 0;
         for(Animal anAnimal : field.values()) {
-            if(anAnimal instanceof Fox fox) {
-                if(fox.isAlive()) {
-                    numFoxes++;
+            if(anAnimal instanceof Owl owl) {
+                if(owl.isAlive()) {
+                    numOwls++;
                 }
             }
-            else if(anAnimal instanceof Rabbit rabbit) {
-                if(rabbit.isAlive()) {
-                    numRabbits++;
+            else if(anAnimal instanceof Mouse mouse) {
+                if(mouse.isAlive()) {
+                    numMice++;
+                }
+            }
+            else if(anAnimal instanceof Deer deer) {
+                if(deer.isAlive()) {
+                    numDeers++;
+                }
+            }
+            else if(anAnimal instanceof Cat cat) {
+                if(cat.isAlive()) {
+                    numCats++;
+                }
+            }
+            else if(anAnimal instanceof Wolf wolf) {
+                if(wolf.isAlive()) {
+                    numWolves++;
                 }
             }
         }
-        System.out.println("Rabbits: " + numRabbits +
-                           " Foxes: " + numFoxes);
+        System.out.println("Mice: " + numMice +
+                           " Owls: " + numOwls +
+                           " Cats: " + numCats +
+                           " Wolves: " + numWolves +
+                           " Deers: " + numDeers);
     }
 
-    /**
-     * Empty the field.
-     */
     public void clear()
     {
         field.clear();
     }
 
-    /**
-     * Return whether there is at least one rabbit and one fox in the field.
-     * @return true if there is at least one rabbit and one fox in the field.
-     */
     public boolean isViable()
     {
-        boolean rabbitFound = false;
-        boolean foxFound = false;
+        boolean mouseFound = false; 
+        boolean owlFound = false;
+        boolean deerFound = false;
+        boolean catFound = false;
+        boolean wolfFound = false;
         Iterator<Animal> it = animals.iterator();
-        while(it.hasNext() && ! (rabbitFound && foxFound)) {
+        while(it.hasNext() && ! (mouseFound && owlFound && deerFound && catFound && wolfFound)) {
             Animal anAnimal = it.next();
-            if(anAnimal instanceof Rabbit rabbit) {
-                if(rabbit.isAlive()) {
-                    rabbitFound = true;
+            if(anAnimal instanceof Mouse mouse) {
+                if(mouse.isAlive()) {
+                    mouseFound = true;
                 }
             }
-            else if(anAnimal instanceof Fox fox) {
-                if(fox.isAlive()) {
-                    foxFound = true;
+            else if(anAnimal instanceof Owl owl) {
+                if(owl.isAlive()) {
+                    owlFound = true;
+                }
+            }
+            else if(anAnimal instanceof Wolf wolf) {
+                if(wolf.isAlive()) {
+                    wolfFound = true;
+                }
+            }
+            else if(anAnimal instanceof Deer deer) {
+                if(deer.isAlive()) {
+                    deerFound = true;
+                }
+            }
+            else if(anAnimal instanceof Cat cat) {
+                if(cat.isAlive()) {
+                    catFound = true;
                 }
             }
         }
-        return rabbitFound && foxFound;
+        return mouseFound && owlFound && deerFound && catFound && wolfFound;
     }
     
-    /**
-     * Get the list of animals.
-     */
     public List<Animal> getAnimals()
     {
         return animals;
     }
 
-    /**
-     * Return the depth of the field.
-     * @return The depth of the field.
-     */
     public int getDepth()
     {
         return depth;
     }
     
-    /**
-     * Return the width of the field.
-     * @return The width of the field.
-     */
     public int getWidth()
     {
         return width;
