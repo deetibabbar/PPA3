@@ -4,11 +4,11 @@ import java.util.Random;
 
 public class Owl extends Animal
 {
-    private static final int BREEDING_AGE = 11;
-    private static final int MAX_AGE = 150;
-    private static final double BREEDING_PROBABILITY = 0.09;
-    private static final int MAX_LITTER_SIZE = 4;
-    private static final int MOUSE_FOOD_VALUE = 6;
+    private static final int BREEDING_AGE = 6;
+    private static final int MAX_AGE = 100;
+    private static final double BREEDING_PROBABILITY = 0.10;
+    private static final int MAX_LITTER_SIZE = 5;
+    private static final int MOUSE_FOOD_VALUE = 5;
     private static final int CAT_FOOD_VALUE = 9;
     private static final Random rand = Randomizer.getRandom();
     private int age;

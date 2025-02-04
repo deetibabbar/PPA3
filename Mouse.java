@@ -3,10 +3,10 @@ import java.util.Random;
 
 public class Mouse extends Animal
 {
-    private static final int BREEDING_AGE = 3;
-    private static final int MAX_AGE = 7;
-    private static final double BREEDING_PROBABILITY = 0.12;
-    private static final int MAX_LITTER_SIZE = 3;
+    private static final int BREEDING_AGE = 4;
+    private static final int MAX_AGE = 16;
+    private static final double BREEDING_PROBABILITY = 0.25;
+    private static final int MAX_LITTER_SIZE = 6;
     private static final Random rand = Randomizer.getRandom();
     private int age;
 
