@@ -3,9 +3,9 @@ import java.util.Random;
 
 public class Deer extends Animal
 {
-    private static final int BREEDING_AGE = 7;
-    private static final int MAX_AGE = 40;
-    private static final double BREEDING_PROBABILITY = 0.10;
+    private static final int BREEDING_AGE = 6;
+    private static final int MAX_AGE = 35;
+    private static final double BREEDING_PROBABILITY = 0.08;
     private static final int MAX_LITTER_SIZE = 2;
     private static final Random rand = Randomizer.getRandom();
     private int age;
