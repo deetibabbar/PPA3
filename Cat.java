@@ -4,9 +4,9 @@ import java.util.Random;
 
 public class Cat extends Animal
 {
-    private static final int BREEDING_AGE = 4;
-    private static final int MAX_AGE = 20;
-    private static final double BREEDING_PROBABILITY = 0.14;
+    private static final int BREEDING_AGE = 3;
+    private static final int MAX_AGE = 35;
+    private static final double BREEDING_PROBABILITY = 0.20;
     private static final int MAX_LITTER_SIZE = 4;
     private static final int MOUSE_FOOD_VALUE = 9;
     private static final Random rand = Randomizer.getRandom();

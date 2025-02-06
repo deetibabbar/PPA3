@@ -2,13 +2,13 @@ import java.util.*;
 
 public class Simulator
 {
-    private static final int DEFAULT_WIDTH = 150;
-    private static final int DEFAULT_DEPTH = 150;
-    private static final double OWL_CREATION_PROBABILITY = 0.06;
-    private static final double MOUSE_CREATION_PROBABILITY = 0.07;   
-    private static final double CAT_CREATION_PROBABILITY = 0.07;
-    private static final double WOLF_CREATION_PROBABILITY = 0.05;
-    private static final double DEER_CREATION_PROBABILITY = 0.07; 
+    private static final int DEFAULT_WIDTH = 130;
+    private static final int DEFAULT_DEPTH = 130;
+    private static final double OWL_CREATION_PROBABILITY = 0.02;
+    private static final double MOUSE_CREATION_PROBABILITY = 0.06;   
+    private static final double CAT_CREATION_PROBABILITY = 0.05;
+    private static final double WOLF_CREATION_PROBABILITY = 0.07;
+    private static final double DEER_CREATION_PROBABILITY = 0.05; 
 
     private Field field;
     private int step;
@@ -142,7 +142,7 @@ public class Simulator
 
     public static void main(String[] args) {
         Simulator sim1 = new Simulator();
-        sim1.runLongSimulation();
+        sim1.simulate(2500);
     }
 }
 
