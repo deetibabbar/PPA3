@@ -4,17 +4,17 @@ public class Simulator
 {
     private static final int DEFAULT_WIDTH = 130;
     private static final int DEFAULT_DEPTH = 130;
-    private static final double OWL_CREATION_PROBABILITY = 0.02;
-    private static final double MOUSE_CREATION_PROBABILITY = 0.06;   
-    private static final double CAT_CREATION_PROBABILITY = 0.05;
-    private static final double WOLF_CREATION_PROBABILITY = 0.07;
-    private static final double DEER_CREATION_PROBABILITY = 0.05; 
+    private static final double OWL_CREATION_PROBABILITY = 0.06;
+    private static final double MOUSE_CREATION_PROBABILITY = 0.07;   
+    private static final double CAT_CREATION_PROBABILITY = 0.07;
+    private static final double WOLF_CREATION_PROBABILITY = 0.05;
+    private static final double DEER_CREATION_PROBABILITY = 0.07; 
 
     private Field field;
     private int step;
     private final SimulatorView view;
     
-    private  int time;
+    private int time;
     private int day;
 
     public Simulator()
@@ -53,7 +53,7 @@ public class Simulator
     
     public void simulateOneStep()
     {
-        //step++;
+        step++;
         stepTime();
         Field nextFieldState = new Field(field.getDepth(), field.getWidth());
 
@@ -131,18 +131,24 @@ public class Simulator
     
     public void stepTime()
     {
-        step++;
-        time = step%4;
-        day = 0;
-        if (time == 0)
+        if (time < 24)
         {
+            if (step % 6 == 0)
+            {
+                time += 6;
+            }
+        }
+        if (time == 24)
+        {
+            time = 0;
             day++;
         }
     }
+    
 
     public static void main(String[] args) {
         Simulator sim1 = new Simulator();
-        sim1.simulate(2500);
+        sim1.runLongSimulation();
     }
 }
 
