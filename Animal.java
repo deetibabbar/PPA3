@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Random;
 public abstract class Animal {
     private boolean alive;
@@ -7,15 +8,11 @@ public abstract class Animal {
     private int gender;
 
     private Random rand = new Random();
-    
-    //private Field field;
-    
+        
     public Animal(Location location)
     {
         this.alive = true;
         this.location = location;
-        //this.field = field;
-        
         gender = rand.nextInt(2);
     }
     
@@ -55,8 +52,17 @@ public abstract class Animal {
         this.location = location;
     }
     
-    // protected Field getField()
-    // {
-        // return field;
-    // }
+    protected boolean genderCheck(Field field)
+    {   
+        List<Location> adjacent = field.getAdjacentLocations(getLocation());
+        for (Location beside : adjacent)
+        {
+            Animal adjacentAnimal = (Animal) field.getAnimalAt(beside);
+            if (adjacentAnimal != null && this.getGender() != adjacentAnimal.getGender())
+            {
+                return true; 
+            }
+        }
+        return false;
+    }
 }

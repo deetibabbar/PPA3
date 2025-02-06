@@ -97,7 +97,7 @@ public class Cat extends Animal
     
     private void giveBirth(Field nextFieldState, List<Location> freeLocations)
     {
-        int births = breed();
+        int births = breed(nextFieldState);
         if(births > 0) {
             for (int b = 0; b < births && ! freeLocations.isEmpty(); b++) {
                 Location loc = freeLocations.remove(0);
@@ -107,40 +107,30 @@ public class Cat extends Animal
         }
     }
         
-    // private int breed()
-    // {
-        // int births;
-        // Field field = getField();
-        
-        // List<Location> adjacent = field.getAdjacentLocations(getLocation());
-        // for (Location beside : adjacent){
-            // Cat adjacentCat = (Cat) field.getAnimalAt(beside);
-            // if (adjacentCat != null){
-                // if (adjacentCat != null && this.getGender() != !adjacentCat.getGender()){
-                    // if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-                        // births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-                    // }   
-                    // // else {
-                        // // births = 0;
-                    // // }  
-                // }
-            // }
-        // }
-        
-        // return births = 0;
-    // }
-    
-    private int breed()
+    private int breed(Field field)
     {
-        int births;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        else {
-            births = 0;
+        int births = 0;
+        if (!genderCheck(field))
+        {
+            if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) 
+            {
+                births = rand.nextInt(MAX_LITTER_SIZE) + 1;
+            }   
         }
         return births;
     }
+    
+    // private int oldbreed()
+    // {
+    //     int births;
+    //     if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
+    //         births = rand.nextInt(MAX_LITTER_SIZE) + 1;
+    //     }
+    //     else {
+    //         births = 0;
+    //     }
+    //     return births;
+    // }
 
     private boolean canBreed()
     {

@@ -59,7 +59,7 @@ public class Deer extends Animal
 
     private void giveBirth(Field nextFieldState, List<Location> freeLocations)
     {
-        int births = breed();
+        int births = breed(nextFieldState);
         if(births > 0) {
             for (int b = 0; b < births && !freeLocations.isEmpty(); b++) {
                 Location loc = freeLocations.remove(0);
@@ -69,14 +69,27 @@ public class Deer extends Animal
         }
     }
     
-    private int breed()
+    // private int breed()
+    // {
+    //     int births;
+    //     if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
+    //         births = rand.nextInt(MAX_LITTER_SIZE) + 1;
+    //     }
+    //     else {
+    //         births = 0;
+    //     }
+    //     return births;
+    // }
+
+    private int breed(Field field)
     {
-        int births;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        else {
-            births = 0;
+        int births = 0;
+        if (!genderCheck(field))
+        {
+            if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) 
+            {
+                births = rand.nextInt(MAX_LITTER_SIZE) + 1;
+            }   
         }
         return births;
     }
