@@ -65,4 +65,9 @@ public abstract class Animal {
         }
         return false;
     }
+
+    protected void specialMovement()
+    {
+        
+    }
 }

@@ -13,9 +13,8 @@ public class Simulator
     private Field field;
     private int step;
     private final SimulatorView view;
-    
-    private int time;
-    private int day;
+
+    private Time time = new Time();
 
     public Simulator()
     {
@@ -54,7 +53,7 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
-        stepTime();
+        time.setTime();
         Field nextFieldState = new Field(field.getDepth(), field.getWidth());
 
         List<Animal> animals = field.getAnimals();
@@ -65,14 +64,14 @@ public class Simulator
         field = nextFieldState;
 
         reportStats();
-        view.showStatus(step, field, time, day);
+        view.showStatus(step, field, time.getTime(), time.getDay());
     }
         
     public void reset()
     {
         step = 0;
         populate();
-        view.showStatus(step, field, time, day);
+        view.showStatus(step, field, time.getTime(), time.getDay());
     }
     
     private void populate()
@@ -121,27 +120,6 @@ public class Simulator
             Thread.sleep(milliseconds);
         }
         catch(InterruptedException e) {
-        }
-    }
-    
-    public int getTime()
-    {
-        return time;
-    }
-    
-    public void stepTime()
-    {
-        if (time < 24)
-        {
-            if (step % 6 == 0)
-            {
-                time += 6;
-            }
-        }
-        if (time == 24)
-        {
-            time = 0;
-            day++;
         }
     }
     
