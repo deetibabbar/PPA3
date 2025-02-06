@@ -12,7 +12,7 @@ public class Cat extends Animal
     private static final Random rand = Randomizer.getRandom();
     private int age;
     private int foodLevel;
-
+    
     public Cat(boolean randomAge, Location location)
     {
         super(location);
@@ -107,6 +107,29 @@ public class Cat extends Animal
         }
     }
         
+    // private int breed()
+    // {
+        // int births;
+        // Field field = getField();
+        
+        // List<Location> adjacent = field.getAdjacentLocations(getLocation());
+        // for (Location beside : adjacent){
+            // Cat adjacentCat = (Cat) field.getAnimalAt(beside);
+            // if (adjacentCat != null){
+                // if (adjacentCat != null && this.getGender() != !adjacentCat.getGender()){
+                    // if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
+                        // births = rand.nextInt(MAX_LITTER_SIZE) + 1;
+                    // }   
+                    // // else {
+                        // // births = 0;
+                    // // }  
+                // }
+            // }
+        // }
+        
+        // return births = 0;
+    // }
+    
     private int breed()
     {
         int births;

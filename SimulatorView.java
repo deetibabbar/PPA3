@@ -10,8 +10,13 @@ public class SimulatorView extends JFrame {
 
     private final String STEP_PREFIX = "Step: ";
     private final String POPULATION_PREFIX = "Population: ";
+    private final String TIME_PREFIX = "Time: ";
+    private final String DAY_PREFIX = "Day: ";
+    
     private final JLabel stepLabel;
     private final JLabel population;
+    private final JLabel timeLabel;
+    private final JLabel dayLabel;
     private final FieldView fieldView;
     
     private final Map<Class<?>, Color> colors;
@@ -27,16 +32,22 @@ public class SimulatorView extends JFrame {
         setColor(Deer.class, Color.yellow);
         setColor(Wolf.class, Color.green);
 
-        setTitle("Fox and Rabbit Simulation");
+        setTitle("Animal Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
-        
+        timeLabel = new JLabel(TIME_PREFIX, JLabel.CENTER);
+        dayLabel = new JLabel(DAY_PREFIX, JLabel.CENTER);
+
+
         setLocation(100, 50);
         
         fieldView = new FieldView(height, width);
 
         Container contents = getContentPane();
+        
         contents.add(stepLabel, BorderLayout.NORTH);
+        contents.add(timeLabel, BorderLayout.EAST);
+        contents.add(dayLabel, BorderLayout.WEST);
         contents.add(fieldView, BorderLayout.CENTER);
         contents.add(population, BorderLayout.SOUTH);
         pack();
@@ -60,13 +71,17 @@ public class SimulatorView extends JFrame {
         }
     }
 
-    public void showStatus(int step, Field field)
+    public void showStatus(int step, Field field, int time, int day)
     {
         if(!isVisible()) {
             setVisible(true);
         }
             
         stepLabel.setText(STEP_PREFIX + step);
+        stats.reset();
+        timeLabel.setText(TIME_PREFIX + time + ":00");
+        stats.reset();
+        dayLabel.setText(DAY_PREFIX + day);
         stats.reset();
         
         fieldView.preparePaint();
