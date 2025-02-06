@@ -9,6 +9,7 @@ public class Simulator
     private static final double CAT_CREATION_PROBABILITY = 0.05;
     private static final double WOLF_CREATION_PROBABILITY = 0.07;
     private static final double DEER_CREATION_PROBABILITY = 0.05; 
+    private static final double PLANT_CREATION_PROBABILITY = 1; 
 
     private Field field;
     private int step;
@@ -101,6 +102,11 @@ public class Simulator
                     Location location = new Location(row, col);
                     Deer deer = new Deer(true, location);
                     field.placeAnimal(deer, location);
+                }
+                else if(rand.nextDouble() <= PLANT_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Plant plant = new Plant(location);
+                    field.placePlant(plant, location);
                 }
             }
         }

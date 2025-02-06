@@ -12,8 +12,10 @@ public class Field {
     
     private final int depth, width;
     private final Map<Location, Animal> field = new HashMap<>();
+    private final Map<Location, Plant> fieldPlant = new HashMap<>();
 
     private final List<Animal> animals = new ArrayList<>();
+    private final List<Plant> plants = new ArrayList<>();
 
     public Field(int depth, int width)
     {
@@ -25,16 +27,26 @@ public class Field {
     {
         assert location != null;
         Object other = field.get(location);
-        if(other != null) {
-            animals.remove(other);
+        if(other != null && other instanceof Animal animal) {
+            animals.remove(animal);
         }
         field.put(location, anAnimal);
         animals.add(anAnimal);
+    }
+
+    public void placePlant(Plant plant, Location location){
+        assert location != null;
+        fieldPlant.put(location, plant);
+        plants.add(plant);
     }
     
     public Animal getAnimalAt(Location location)
     {
         return field.get(location);
+    }
+
+    public Plant getPlantAt(Location location){
+        return fieldPlant.get(location);
     }
 
     public List<Location> getFreeAdjacentLocations(Location location)
