@@ -53,7 +53,7 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
-        time.setTime();
+        time.setTime(step);
         Field nextFieldState = new Field(field.getDepth(), field.getWidth());
 
         List<Animal> animals = field.getAnimals();
