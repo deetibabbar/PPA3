@@ -9,6 +9,7 @@ public class Simulator
     private static final double CAT_CREATION_PROBABILITY = 0.05;
     private static final double WOLF_CREATION_PROBABILITY = 0.07;
     private static final double DEER_CREATION_PROBABILITY = 0.05; 
+    private static final double PLANT_CREATION_PROBABILITY = 1; 
 
     private Field field;
     private int step;
@@ -43,6 +44,7 @@ public class Simulator
     {
         reportStats();
         for(int n = 1; n <= numSteps && field.isViable(); n++) {
+            System.out.println("testing");
             simulateOneStep();
             delay(50);       
         }
@@ -56,6 +58,11 @@ public class Simulator
         List<Animal> animals = field.getAnimals();
         for (Animal anAnimal : animals) {
             anAnimal.act(field, nextFieldState);
+        }
+
+        List<Plant> plants = field.getPlants();
+        for (Plant aPlant : plants) {
+            aPlant.act(field, nextFieldState);
         }
         
         field = nextFieldState;
@@ -102,6 +109,11 @@ public class Simulator
                     Deer deer = new Deer(true, location);
                     field.placeAnimal(deer, location);
                 }
+                else if(rand.nextDouble() <= PLANT_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Plant plant = new Plant(location);
+                    field.placePlant(plant, location);
+                }
             }
         }
     }
@@ -122,7 +134,7 @@ public class Simulator
 
     public static void main(String[] args) {
         Simulator sim1 = new Simulator();
-        sim1.simulate(2500);
+        sim1.simulate(700);
     }
 }
 

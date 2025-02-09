@@ -25,7 +25,8 @@ public class SimulatorView extends JFrame {
         setColor(Owl.class, Color.magenta);
         setColor(Cat.class, Color.cyan);
         setColor(Deer.class, Color.yellow);
-        setColor(Wolf.class, Color.green);
+        setColor(Wolf.class, Color.gray);
+        setColor(Plant.class, Color.green);
 
         setTitle("Fox and Rabbit Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
@@ -79,13 +80,8 @@ public class SimulatorView extends JFrame {
                     stats.incrementCount(animal.getClass());
                     fieldView.drawMark(col, row, getColor(animal.getClass()));
                 }
-<<<<<<< HEAD
                 else if(plant != null){
                     fieldView.drawMark(col, row, getColor(Plant.class));
-=======
-                else {
-                    fieldView.drawMark(col, row, EMPTY_COLOR);
->>>>>>> parent of b9e5b72 (Field turns green)
                 }
                 else {
                     fieldView.drawMark(col, row, EMPTY_COLOR);

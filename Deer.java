@@ -110,11 +110,11 @@ public class Deer extends Animal
         while(foodLocation == null && it.hasNext()) {
             Location loc = it.next();
             Plant plant = field.getPlantAt(loc);  
-                if(plant.isAlive()) {
-                    plant.setDead();
-                    foodLevel = PLANT_FOOD_LEVEL;
-                    foodLocation = loc;
-                }
+            if(plant != null && plant.isAlive()) {
+                plant.setDead();
+                foodLevel = PLANT_FOOD_LEVEL;
+                foodLocation = loc;
+            }
         }
     return foodLocation;
     }

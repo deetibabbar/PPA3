@@ -1,19 +1,14 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class Field {
     private static final Random rand = Randomizer.getRandom();
     
     private final int depth, width;
     private final Map<Location, Animal> field = new HashMap<>();
+    private final Map<Location, Plant> fieldPlant = new HashMap<>();
 
     private final List<Animal> animals = new ArrayList<>();
+    private final List<Plant> plants = new ArrayList<>();
 
     public Field(int depth, int width)
     {
@@ -25,11 +20,19 @@ public class Field {
     {
         assert location != null;
         Object other = field.get(location);
-        if(other != null) {
-            animals.remove(other);
+        if(other != null && other instanceof Animal animal) {
+            animals.remove(animal);
         }
+        else if (other == null || other instanceof Plant){
         field.put(location, anAnimal);
         animals.add(anAnimal);
+        }
+    }
+
+    public void placePlant(Plant plant, Location location){
+        assert location != null;
+        fieldPlant.put(location, plant);
+        plants.add(plant);
     }
     
     public Animal getAnimalAt(Location location)
@@ -37,16 +40,20 @@ public class Field {
         return field.get(location);
     }
 
+    public Plant getPlantAt(Location location){
+        return fieldPlant.get(location);
+    }
+
     public List<Location> getFreeAdjacentLocations(Location location)
     {
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = getAdjacentLocations(location);
         for(Location next : adjacent) {
-            Animal anAnimal = field.get(next);
-            if(anAnimal == null) {
+            Object item = field.get(next);
+            if(item instanceof Plant || item == null) {
                 free.add(next);
             }
-            else if(!anAnimal.isAlive()) {
+            else if(item instanceof Animal anAnimal && !anAnimal.isAlive()) {
                 free.add(next);
             }
         }
@@ -81,29 +88,33 @@ public class Field {
     {
         int numOwls = 0, numMice = 0, numDeers = 0, numCats = 0, numWolves = 0;
         for(Animal anAnimal : field.values()) {
-            if(anAnimal instanceof Owl owl) {
-                if(owl.isAlive()) {
-                    numOwls++;
+            switch (anAnimal) {
+                case Owl owl -> {
+                    if(owl.isAlive()) {
+                        numOwls++;
+                    }
                 }
-            }
-            else if(anAnimal instanceof Mouse mouse) {
-                if(mouse.isAlive()) {
-                    numMice++;
+                case Mouse mouse -> {
+                    if(mouse.isAlive()) {
+                        numMice++;
+                    }
                 }
-            }
-            else if(anAnimal instanceof Deer deer) {
-                if(deer.isAlive()) {
-                    numDeers++;
+                case Deer deer -> {
+                    if(deer.isAlive()) {
+                        numDeers++;
+                    }
                 }
-            }
-            else if(anAnimal instanceof Cat cat) {
-                if(cat.isAlive()) {
-                    numCats++;
+                case Cat cat -> {
+                    if(cat.isAlive()) {
+                        numCats++;
+                    }
                 }
-            }
-            else if(anAnimal instanceof Wolf wolf) {
-                if(wolf.isAlive()) {
-                    numWolves++;
+                case Wolf wolf -> {
+                    if(wolf.isAlive()) {
+                        numWolves++;
+                    }
+                }
+                default -> {
                 }
             }
         }
@@ -161,6 +172,11 @@ public class Field {
     public List<Animal> getAnimals()
     {
         return animals;
+    }
+
+    public List<Plant> getPlants()
+    {
+        return plants;
     }
 
     public int getDepth()
