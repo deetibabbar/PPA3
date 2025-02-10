@@ -35,8 +35,10 @@ public class Plant{
         if(births > 0) {
             for (int b = 0; b < births && ! freeLocations.isEmpty(); b++) {
                 Location loc = freeLocations.remove(0);
-                Plant young = new Plant(loc);
-                nextFieldState.placePlant(young, loc);
+                if (!nextFieldState.containsTrap(loc)){
+                    Plant young = new Plant(loc);
+                    nextFieldState.placePlant(young, loc);
+                }
             }
         }
     }

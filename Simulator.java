@@ -10,6 +10,7 @@ public class Simulator
     private static final double WOLF_CREATION_PROBABILITY = 0.07;
     private static final double DEER_CREATION_PROBABILITY = 0.05; 
     private static final double PLANT_CREATION_PROBABILITY = 1; 
+    private static final double TRAP_CREATION_PROBABILITY = 0.0007; 
 
     private Field field;
     private int step;
@@ -44,7 +45,6 @@ public class Simulator
     {
         reportStats();
         for(int n = 1; n <= numSteps && field.isViable(); n++) {
-            System.out.println("testing");
             simulateOneStep();
             delay(50);       
         }
@@ -58,6 +58,11 @@ public class Simulator
         List<Animal> animals = field.getAnimals();
         for (Animal anAnimal : animals) {
             anAnimal.act(field, nextFieldState);
+        }
+
+        List<Trap> traps = field.getTraps();
+        for (Trap aTrap : traps) {
+            aTrap.act(field, nextFieldState);
         }
 
         List<Plant> plants = field.getPlants();
@@ -84,7 +89,12 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= OWL_CREATION_PROBABILITY) {
+                if(rand.nextDouble() <= TRAP_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Trap trap = new Trap(location);
+                    field.placeTrap(trap, location);
+                }
+                else if(rand.nextDouble() <= OWL_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
                     Owl owl = new Owl(true, location);
                     field.placeAnimal(owl, location);

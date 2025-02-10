@@ -6,9 +6,12 @@ public class Field {
     private final int depth, width;
     private final Map<Location, Animal> field = new HashMap<>();
     private final Map<Location, Plant> fieldPlant = new HashMap<>();
+    private final Map<Location, Trap> fieldTrap = new HashMap<>();
 
     private final List<Animal> animals = new ArrayList<>();
     private final List<Plant> plants = new ArrayList<>();
+    private final List<Trap> traps = new ArrayList<>();
+
 
     public Field(int depth, int width)
     {
@@ -24,15 +27,36 @@ public class Field {
             animals.remove(animal);
         }
         else if (other == null || other instanceof Plant){
-        field.put(location, anAnimal);
-        animals.add(anAnimal);
+            field.put(location, anAnimal);
+            animals.add(anAnimal);
+        }
+        else if (other instanceof Trap){
+            animals.remove(anAnimal);
+            anAnimal.setDead();
         }
     }
 
     public void placePlant(Plant plant, Location location){
         assert location != null;
+        Object other = field.get(location);
+        if (other != null && other instanceof Trap){
+            plants.remove(plant);
+        }
         fieldPlant.put(location, plant);
         plants.add(plant);
+    }
+
+    public void placeTrap(Trap trap, Location location){
+        assert location != null;
+        Object other = field.get(location);
+        if (other != null && other instanceof Animal animal){
+            animals.remove(animal);
+        }
+        else if (other != null && other instanceof Plant plant){
+            plants.remove(plant);
+        }
+        fieldTrap.put(location, trap);
+        traps.add(trap);
     }
     
     public Animal getAnimalAt(Location location)
@@ -42,6 +66,14 @@ public class Field {
 
     public Plant getPlantAt(Location location){
         return fieldPlant.get(location);
+    }
+
+    public Trap getTrapAt(Location location){
+        return fieldTrap.get(location);
+    }
+
+    public boolean containsTrap(Location location){
+        return fieldTrap.containsKey(location);
     }
 
     public List<Location> getFreeAdjacentLocations(Location location)
@@ -177,6 +209,11 @@ public class Field {
     public List<Plant> getPlants()
     {
         return plants;
+    }
+
+    public List<Trap> getTraps()
+    {
+        return traps;
     }
 
     public int getDepth()
