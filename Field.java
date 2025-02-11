@@ -40,7 +40,7 @@ public class Field {
     public List<Location> getFreeAdjacentLocations(Location location)
     {
         List<Location> free = new LinkedList<>();
-        List<Location> adjacent = getAdjacentLocations(location);
+        List<Location> adjacent = getAdjacentLocations(location, 1);
         for(Location next : adjacent) {
             Animal anAnimal = field.get(next);
             if(anAnimal == null) {
@@ -53,16 +53,16 @@ public class Field {
         return free;
     }
 
-    public List<Location> getAdjacentLocations(Location location)
+    public List<Location> getAdjacentLocations(Location location, int n)
     {
         List<Location> locations = new ArrayList<>();
         if(location != null) {
             int row = location.row();
             int col = location.col();
-            for(int roffset = -1; roffset <= 1; roffset++) {
+            for(int roffset = -n; roffset <= n; roffset++) {
                 int nextRow = row + roffset;
                 if(nextRow >= 0 && nextRow < depth) {
-                    for(int coffset = -1; coffset <= 1; coffset++) {
+                    for(int coffset = -n; coffset <= n; coffset++) {
                         int nextCol = col + coffset;
                         // Exclude invalid locations and the original location.
                         if(nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
@@ -76,6 +76,31 @@ public class Field {
         }
         return locations;
     }
+
+    // public List<Location> getLocationsFromNCellsAway(Location location, int n)
+    // {
+    //     List<Location> locations = new ArrayList<>();
+    //     if(location != null) {
+    //         int row = location.row();
+    //         int col = location.col();
+    //         for(int roffset = -n; roffset <= n; roffset++) {
+    //             int nextRow = row + roffset;
+    //             if(nextRow >= 0 && nextRow < depth) {
+    //                 for(int coffset = -n; coffset <= n; coffset++) {
+    //                     int nextCol = col + coffset;
+    //                     // Exclude invalid locations and the original location.
+    //                     if(nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
+    //                         locations.add(new Location(nextRow, nextCol));
+    //                     }
+    //                 }
+    //             }
+    //         }
+
+    //         Collections.shuffle(locations, rand);
+    //     }
+    //     return locations;
+    // }
+    
 
     public void fieldStats()
     {

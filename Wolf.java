@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -12,6 +13,8 @@ public class Wolf extends Animal
     private static final Random rand = Randomizer.getRandom();
     private int age;
     private int foodLevel;
+
+    private Time time = new Time(0,0);
 
     public Wolf(boolean randomAge, Location location)
     {
@@ -30,7 +33,7 @@ public class Wolf extends Animal
     {
         incrementAge();
         incrementHunger();
-        if(isAlive()) {
+        if(isAlive() && time.timeOfDay() == Time.timeOfDay.NIGHT) {
             List<Location> freeLocations =
                     nextFieldState.getFreeAdjacentLocations(getLocation());
             if(! freeLocations.isEmpty()) {
@@ -78,7 +81,7 @@ public class Wolf extends Animal
     
     private Location findFood(Field field)
     {
-        List<Location> adjacent = field.getAdjacentLocations(getLocation());
+        List<Location> adjacent = field.getAdjacentLocations(getLocation(), 1);
         Iterator<Location> it = adjacent.iterator();
         Location foodLocation = null;
         while(foodLocation == null && it.hasNext()) {

@@ -3,10 +3,10 @@ public class Time {
     private int time;
     private int day;
     
-    public Time()
+    public Time(int time, int day)
     {
-        this.time = 0;
-        this.day = 0;
+        this.time = time;
+        this.day = day;
     }
 
     public int getTime()
@@ -21,38 +21,30 @@ public class Time {
     
     public void setTime(int step)
     {
-        if (time < 24)
+        if (step % 6 == 0)
         {
-            if (step % 6 == 0)
-            {
-                time += 6;
-            }
-            if (time == 24)
-            {
-                time = 0;
-            } 
+            time += 6;
+        }
+        if (time == 24)
+        {
+            time = 0;
+            day++;
         }  
     }
 
-    public void setDay(int step)
+    public timeOfDay timeOfDay()
     {
-        setTime(step);
-        if (time == 0)
-        {
-            day++;
-        }
-    }
-
-    public String timeOfDay()
-    {
-        String[] stages = {"Day", "Night"};
         if (time == 0 || time == 18)
         {
-            return stages[1];
+            return timeOfDay.NIGHT;
         }
         else 
         {
-            return stages[0];
+            return timeOfDay.DAY;
         }
+    }
+
+    public enum timeOfDay {
+        DAY, NIGHT;
     }
 }

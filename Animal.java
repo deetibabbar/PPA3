@@ -54,7 +54,7 @@ public abstract class Animal {
     
     protected boolean genderCheck(Field field)
     {   
-        List<Location> adjacent = field.getAdjacentLocations(getLocation());
+        List<Location> adjacent = field.getAdjacentLocations(getLocation(), 1);
         for (Location beside : adjacent)
         {
             Animal adjacentAnimal = (Animal) field.getAnimalAt(beside);
@@ -64,10 +64,5 @@ public abstract class Animal {
             }
         }
         return false;
-    }
-
-    protected void specialMovement()
-    {
-        
     }
 }

@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -9,6 +10,8 @@ public class Mouse extends Animal
     private static final int MAX_LITTER_SIZE = 6;
     private static final Random rand = Randomizer.getRandom();
     private int age;
+
+    private Time time = new Time(0,0);
 
     public Mouse(boolean randomAge, Location location)
     {
@@ -24,15 +27,11 @@ public class Mouse extends Animal
     {
         incrementAge();
         if(isAlive()) {
+            specialMovement(currentField, nextFieldState, step);
             List<Location> freeLocations = 
                 nextFieldState.getFreeAdjacentLocations(getLocation());
             if(!freeLocations.isEmpty()) {
                 giveBirth(nextFieldState, freeLocations);
-            }
-            if(! freeLocations.isEmpty()) {
-                Location nextLocation = freeLocations.get(0);
-                setLocation(nextLocation);
-                nextFieldState.placeAnimal(this, nextLocation);
             }
             else {
                 setDead();
@@ -99,5 +98,19 @@ public class Mouse extends Animal
     private boolean canBreed()
     {
         return age >= BREEDING_AGE;
+    }
+
+    public void specialMovement(Field currentField, Field nextFieldState, int step)
+    {
+        if (time.timeOfDay() == Time.timeOfDay.NIGHT && step % 2 == 0)
+        {
+            List<Location> freeLocations = 
+                nextFieldState.getFreeAdjacentLocations(getLocation());
+            if(! freeLocations.isEmpty()) {
+                Location nextLocation = freeLocations.get(0);
+                setLocation(nextLocation);
+                nextFieldState.placeAnimal(this, nextLocation);
+            }
+        }
     }
 }

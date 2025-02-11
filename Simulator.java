@@ -14,7 +14,7 @@ public class Simulator
     private int step;
     private final SimulatorView view;
 
-    private Time time = new Time();
+    private Time time = new Time(0, 0);
 
     public Simulator()
     {
@@ -123,6 +123,10 @@ public class Simulator
         }
     }
     
+    public int getStep()
+    {
+        return step;
+    }
 
     public static void main(String[] args) {
         Simulator sim1 = new Simulator();

@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -12,6 +13,8 @@ public class Cat extends Animal
     private static final Random rand = Randomizer.getRandom();
     private int age;
     private int foodLevel;
+    
+    private Time time = new Time(0,0);
     
     public Cat(boolean randomAge, Location location)
     {
@@ -31,6 +34,7 @@ public class Cat extends Animal
         incrementAge();
         incrementHunger();
         if(isAlive()) {
+            specialMovement(currentField, nextFieldState);
             List<Location> freeLocations =
                     nextFieldState.getFreeAdjacentLocations(getLocation());
             if(! freeLocations.isEmpty()) {
@@ -78,7 +82,7 @@ public class Cat extends Animal
     
     private Location findFood(Field field)
     {
-        List<Location> adjacent = field.getAdjacentLocations(getLocation());
+        List<Location> adjacent = field.getAdjacentLocations(getLocation(), 1);
         Iterator<Location> it = adjacent.iterator();
         Location foodLocation = null;
         while(foodLocation == null && it.hasNext()) {
@@ -135,5 +139,32 @@ public class Cat extends Animal
     private boolean canBreed()
     {
         return age >= BREEDING_AGE;
+    }
+
+    public void specialMovement(Field currentField, Field nextFieldState)
+    {
+        if (time.timeOfDay() == Time.timeOfDay.DAY)
+        {
+            List<Location> potentialLocations = currentField.getAdjacentLocations(getLocation(), 2);
+            
+            // Filter free locations in potentialLocations
+            List<Location> freeLocations = new ArrayList<>();
+            for (Location location : potentialLocations) 
+            {
+                if (nextFieldState.getAnimalAt(location) == null) 
+                {
+                    freeLocations.add(location);
+                }
+            }
+
+            // Move to a random free location
+            if (!freeLocations.isEmpty()) 
+            {
+                int randomLocation = rand.nextInt(freeLocations.size());
+                Location nextLocation = freeLocations.get(randomLocation);
+                setLocation(nextLocation);
+                nextFieldState.placeAnimal(this, nextLocation);
+            }
+        }
     }
 }
