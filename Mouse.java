@@ -29,10 +29,16 @@ public class Mouse extends Animal
         incrementAge();
         incrementHunger();
         if(isAlive()) {
+            if (isDiseased()){
+                incrementDisease();
+                diseaseDeath();
+            }
             List<Location> freeLocations = 
                 nextFieldState.getFreeAdjacentLocations(getLocation());
             if(!freeLocations.isEmpty()) {
                 giveBirth(nextFieldState, freeLocations);
+                disease();
+                spreadDisease(currentField);
             }
 
             Location nextLocation = findFood(currentField);
