@@ -14,7 +14,8 @@ public class Simulator
     private int step;
     private final SimulatorView view;
 
-    private Time time = new Time(0, 0);
+    private static Time time = new Time();
+    private Weather weather = new Weather();
 
     public Simulator()
     {
@@ -62,16 +63,17 @@ public class Simulator
         }
         
         field = nextFieldState;
+        field.deforestation(step, weather);
 
         reportStats();
-        view.showStatus(step, field, time.getTime(), time.getDay());
+        view.showStatus(step, field, time.getHour(), time.getDay(), weather.getWeather());
     }
         
     public void reset()
     {
         step = 0;
         populate();
-        view.showStatus(step, field, time.getTime(), time.getDay());
+        view.showStatus(step, field, time.getHour(), time.getDay(), weather.getWeather());
     }
     
     private void populate()
@@ -129,7 +131,7 @@ public class Simulator
     }
 
     public static void main(String[] args) {
-        Simulator sim1 = new Simulator();
+        Simulator sim1 = new Simulator(); 
         sim1.runLongSimulation();
     }
 }

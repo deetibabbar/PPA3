@@ -8,6 +8,8 @@ public abstract class Animal {
     private int gender;
 
     private Random rand = new Random();
+
+    private static Time time = new Time();
         
     public Animal(Location location)
     {
@@ -64,5 +66,10 @@ public abstract class Animal {
             }
         }
         return false;
+    }
+
+    protected Time getTime()
+    {
+        return time;
     }
 }

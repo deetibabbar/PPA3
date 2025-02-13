@@ -10,7 +10,7 @@ import java.util.Random;
 public class Field {
     private static final Random rand = Randomizer.getRandom();
     
-    private final int depth, width;
+    private int depth, width;
     private final Map<Location, Animal> field = new HashMap<>();
 
     private final List<Animal> animals = new ArrayList<>();
@@ -76,31 +76,6 @@ public class Field {
         }
         return locations;
     }
-
-    // public List<Location> getLocationsFromNCellsAway(Location location, int n)
-    // {
-    //     List<Location> locations = new ArrayList<>();
-    //     if(location != null) {
-    //         int row = location.row();
-    //         int col = location.col();
-    //         for(int roffset = -n; roffset <= n; roffset++) {
-    //             int nextRow = row + roffset;
-    //             if(nextRow >= 0 && nextRow < depth) {
-    //                 for(int coffset = -n; coffset <= n; coffset++) {
-    //                     int nextCol = col + coffset;
-    //                     // Exclude invalid locations and the original location.
-    //                     if(nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
-    //                         locations.add(new Location(nextRow, nextCol));
-    //                     }
-    //                 }
-    //             }
-    //         }
-
-    //         Collections.shuffle(locations, rand);
-    //     }
-    //     return locations;
-    // }
-    
 
     public void fieldStats()
     {
@@ -196,5 +171,27 @@ public class Field {
     public int getWidth()
     {
         return width;
+    }
+
+    public void deforestation(int step, Weather weather)
+    {
+        // strink field by 1/4 in each dimension every 10 days (every 40 steps)
+        if (weather.getSunny()){ // when raining, deforestation stops
+            if(field.size() > 0 && step % 40 == 0) {
+                int newDepth = depth - depth / 4;
+                int newWidth = width - width / 4;
+                List<Location> toRemove = new ArrayList<>();
+                for(Location loc : field.keySet()) {
+                    if(loc.row() >= newDepth || loc.col() >= newWidth) {
+                        toRemove.add(loc);
+                    }
+                }
+                for(Location loc : toRemove) {
+                    field.remove(loc);
+                }
+            depth = newDepth;
+            width = newWidth;
+            }
+        }
     }
 }

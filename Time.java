@@ -1,17 +1,17 @@
 public class Time {
     
-    private int time;
+    private int hour;
     private int day;
     
-    public Time(int time, int day)
+    public Time()
     {
-        this.time = time;
-        this.day = day;
+        this.hour = 0;
+        this.day = 1;
     }
 
-    public int getTime()
+    public int getHour()
     {
-        return time;
+        return hour;
     }
 
     public int getDay()
@@ -23,28 +23,32 @@ public class Time {
     {
         if (step % 6 == 0)
         {
-            time += 6;
+            hour += 6;
         }
-        if (time == 24)
+        if (hour == 24)
         {
-            time = 0;
+            hour = 0;
             day++;
         }  
     }
 
-    public timeOfDay timeOfDay()
+    public TimeOfDay getTimeOfDay()
     {
-        if (time == 0 || time == 18)
+        if (hour >= 6 || hour <= 12)
         {
-            return timeOfDay.NIGHT;
+            return TimeOfDay.MORNING;
         }
-        else 
+        else if (hour > 12 || hour <= 18)
         {
-            return timeOfDay.DAY;
+            return TimeOfDay.AFTERNOON;
+        }
+        else
+        {
+            return TimeOfDay.NIGHT;
         }
     }
 
-    public enum timeOfDay {
-        DAY, NIGHT;
+    public enum TimeOfDay {
+        MORNING, AFTERNOON, NIGHT;
     }
 }

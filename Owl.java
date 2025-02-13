@@ -15,7 +15,7 @@ public class Owl extends Animal
     private int age;
     private int foodLevel;
 
-    private Time time = new Time(0,0);
+    private static Time time = new Time();
 
     public Owl(boolean randomAge, Location location)
     {
@@ -154,7 +154,7 @@ public class Owl extends Animal
 
     public void specialMovement(Field currentField, Field nextFieldState)
     {
-        if (time.timeOfDay() == Time.timeOfDay.NIGHT)
+        if (time.getTimeOfDay() == Time.TimeOfDay.NIGHT)
         {
             List<Location> potentialLocations = currentField.getAdjacentLocations(getLocation(), 3);
             

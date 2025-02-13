@@ -10,8 +10,6 @@ public class Deer extends Animal
     private static final Random rand = Randomizer.getRandom();
     private int age;
 
-    private Time time = new Time(0,0);
-
     public Deer(boolean randomAge, Location location)
     {
         super(location);
@@ -24,8 +22,13 @@ public class Deer extends Animal
     @Override
     public void act(Field currentField, Field nextFieldState)
     {
+        if (getTime().getTimeOfDay() == Time.TimeOfDay.NIGHT)
+        {
+            return;
+        }
+
         incrementAge();
-        if(isAlive() && time.timeOfDay() == Time.timeOfDay.DAY) {
+        if(isAlive()) {
             List<Location> freeLocations = 
                 nextFieldState.getFreeAdjacentLocations(getLocation());
             if(!freeLocations.isEmpty()) {
@@ -34,9 +37,9 @@ public class Deer extends Animal
             if(! freeLocations.isEmpty()) {
                 Location nextLocation = freeLocations.get(0);
                 setLocation(nextLocation);
-                nextFieldState.placeAnimal(this, nextLocation);
+                nextFieldState.placeAnimal(this, nextLocation); 
             }
-            else {
+             else {
                 setDead();
             }
         }

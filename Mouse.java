@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -11,7 +10,9 @@ public class Mouse extends Animal
     private static final Random rand = Randomizer.getRandom();
     private int age;
 
-    private Time time = new Time(0,0);
+    private static Time time = new Time();
+
+    private int step;
 
     public Mouse(boolean randomAge, Location location)
     {
@@ -102,7 +103,7 @@ public class Mouse extends Animal
 
     public void specialMovement(Field currentField, Field nextFieldState, int step)
     {
-        if (time.timeOfDay() == Time.timeOfDay.NIGHT && step % 2 == 0)
+        if (time.getTimeOfDay() == Time.TimeOfDay.NIGHT && step % 2 == 0)
         {
             List<Location> freeLocations = 
                 nextFieldState.getFreeAdjacentLocations(getLocation());

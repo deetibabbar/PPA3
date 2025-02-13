@@ -12,11 +12,13 @@ public class SimulatorView extends JFrame {
     private final String POPULATION_PREFIX = "Population: ";
     private final String TIME_PREFIX = "Time: ";
     private final String DAY_PREFIX = "Day: ";
+    private final String WEATHER_PREFIX = "Weather: ";
     
     private final JLabel stepLabel;
     private final JLabel population;
     private final JLabel timeLabel;
     private final JLabel dayLabel;
+    private final JLabel weatherLabel;
     private final FieldView fieldView;
     
     private final Map<Class<?>, Color> colors;
@@ -37,6 +39,7 @@ public class SimulatorView extends JFrame {
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
         timeLabel = new JLabel(TIME_PREFIX, JLabel.CENTER);
         dayLabel = new JLabel(DAY_PREFIX, JLabel.CENTER);
+        weatherLabel = new JLabel(WEATHER_PREFIX, JLabel.CENTER);
 
 
         setLocation(100, 50);
@@ -44,8 +47,13 @@ public class SimulatorView extends JFrame {
         fieldView = new FieldView(height, width);
 
         Container contents = getContentPane();
-        
-        contents.add(stepLabel, BorderLayout.NORTH);
+
+        JPanel topPane = new JPanel(new FlowLayout());
+
+        topPane.add(stepLabel, BorderLayout.CENTER);
+        topPane.add(weatherLabel, BorderLayout.EAST);
+
+        contents.add(topPane, BorderLayout.NORTH);
         contents.add(timeLabel, BorderLayout.EAST);
         contents.add(dayLabel, BorderLayout.WEST);
         contents.add(fieldView, BorderLayout.CENTER);
@@ -71,7 +79,7 @@ public class SimulatorView extends JFrame {
         }
     }
 
-    public void showStatus(int step, Field field, int time, int day)
+    public void showStatus(int step, Field field, int time, int day, String weather)
     {
         if(!isVisible()) {
             setVisible(true);
@@ -82,6 +90,8 @@ public class SimulatorView extends JFrame {
         timeLabel.setText(TIME_PREFIX + time + ":00");
         stats.reset();
         dayLabel.setText(DAY_PREFIX + day);
+        stats.reset();
+        weatherLabel.setText(WEATHER_PREFIX + weather);
         stats.reset();
         
         fieldView.preparePaint();
