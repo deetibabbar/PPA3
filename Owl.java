@@ -154,7 +154,7 @@ public class Owl extends Animal
 
     public void specialMovement(Field currentField, Field nextFieldState)
     {
-        if (time.getTimeOfDay() == Time.TimeOfDay.NIGHT)
+        if (time.getTimeOfDay() == TimeOfDay.NIGHT)
         {
             List<Location> potentialLocations = currentField.getAdjacentLocations(getLocation(), 3);
             

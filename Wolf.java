@@ -28,7 +28,7 @@ public class Wolf extends Animal
     @Override
     public void act(Field currentField, Field nextFieldState)
     {
-        if (getTime().getTimeOfDay() == Time.TimeOfDay.MORNING || getTime().getTimeOfDay() == Time.TimeOfDay.AFTERNOON)
+        if (getTime().getTimeOfDay() == TimeOfDay.MORNING || getTime().getTimeOfDay() == TimeOfDay.AFTERNOON)
         {
             return;
         }

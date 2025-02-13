@@ -103,7 +103,7 @@ public class Mouse extends Animal
 
     public void specialMovement(Field currentField, Field nextFieldState, int step)
     {
-        if (time.getTimeOfDay() == Time.TimeOfDay.NIGHT && step % 2 == 0)
+        if (time.getTimeOfDay() == TimeOfDay.NIGHT && step % 2 == 0)
         {
             List<Location> freeLocations = 
                 nextFieldState.getFreeAdjacentLocations(getLocation());

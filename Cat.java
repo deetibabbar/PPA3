@@ -143,7 +143,7 @@ public class Cat extends Animal
 
     public void specialMovement(Field currentField, Field nextFieldState)
     {
-        if (time.getTimeOfDay() == Time.TimeOfDay.MORNING)
+        if (time.getTimeOfDay() == TimeOfDay.MORNING)
         {
             List<Location> potentialLocations = currentField.getAdjacentLocations(getLocation(), 2);
             

@@ -47,8 +47,4 @@ public class Time {
             return TimeOfDay.NIGHT;
         }
     }
-
-    public enum TimeOfDay {
-        MORNING, AFTERNOON, NIGHT;
-    }
 }

@@ -22,7 +22,7 @@ public class Deer extends Animal
     @Override
     public void act(Field currentField, Field nextFieldState)
     {
-        if (getTime().getTimeOfDay() == Time.TimeOfDay.NIGHT)
+        if (getTime().getTimeOfDay() == TimeOfDay.NIGHT)
         {
             return;
         }
