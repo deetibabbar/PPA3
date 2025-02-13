@@ -1,6 +1,5 @@
 import java.awt.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import javax.swing.*;
 
 public class SimulatorView extends JFrame {
@@ -75,9 +74,13 @@ public class SimulatorView extends JFrame {
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
+                Location loc = new Location(row, col);
                 Object animal = field.getAnimalAt(new Location(row, col));
                 Plant plant = field.getPlantAt(new Location(row, col));
                 Trap trap = field.getTrapAt(new Location(row, col));
+                // if (field.wasHitByEarthquake(loc)) {  
+                //     fieldView.drawMark(col, row, Color.red);
+                // }
                 if(trap != null){
                     fieldView.drawMark(col, row, getColor(Trap.class));
                 }
@@ -165,4 +168,5 @@ public class SimulatorView extends JFrame {
             }
         }
     }
+
 }

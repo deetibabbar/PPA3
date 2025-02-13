@@ -11,6 +11,8 @@ public class Field {
     private final List<Animal> animals = new ArrayList<>();
     private final List<Plant> plants = new ArrayList<>();
     private final List<Trap> traps = new ArrayList<>();
+    private final Set<Location> earthquakeAffected = new HashSet<>();
+    private static final int MAX_EARTHQUAKE_RADIUS = 9;
 
 
     public Field(int depth, int width)
@@ -162,6 +164,30 @@ public class Field {
         field.clear();
     }
 
+    public void clear(Location location) {
+        // Remove any animal, plant, or trap at this location
+        field.remove(location);
+        fieldPlant.remove(location);
+        fieldTrap.remove(location);
+
+        // Remove from the lists, checking for null locations
+        animals.removeIf(animal -> {
+            Location loc = animal.getLocation();
+            return loc != null && loc.equals(location);
+        });
+
+        plants.removeIf(plant -> {
+            Location loc = plant.getLocation();
+            return loc != null && loc.equals(location);
+        });
+
+        traps.removeIf(trap -> {
+            Location loc = trap.getLocation();
+            return loc != null && loc.equals(location);
+        });
+    }
+
+
     public boolean isViable()
     {
         boolean mouseFound = false; 
@@ -200,6 +226,36 @@ public class Field {
         }
         return mouseFound && owlFound && deerFound && catFound && wolfFound;
     }
+
+    // public void triggerEarthquake(){
+    //     earthquakeAffected.clear();
+
+    //     Random rand = new Random();
+    //     int epicenterX = rand.nextInt(width);
+    //     int epicenterY = rand.nextInt(depth);
+    //     Location epicenter = new Location(epicenterX, epicenterY);
+    //     int radius = rand.nextInt(MAX_EARTHQUAKE_RADIUS) + 2;
+
+    //     for (int row = 0; row < depth; row++) {
+    //         for (int col = 0; col < width; col++) {
+    //             Location loc = new Location(row, col);
+    //             if (isWithinRadius(epicenter, loc, radius)) {
+    //                 clear(loc); 
+    //                 earthquakeAffected.add(loc);
+    //             }
+    //         }
+    //     }   
+    // }
+
+    // private boolean isWithinRadius(Location epicenter, Location loc, int radius) {
+    //     int dx = epicenter.row() - loc.row();
+    //     int dy = epicenter.col() - loc.col();
+    //     return Math.sqrt(dx * dx + dy * dy) <= radius;
+    // }
+
+    // public boolean wasHitByEarthquake(Location loc) {
+    //     return earthquakeAffected.contains(loc);
+    // }
     
     public List<Animal> getAnimals()
     {

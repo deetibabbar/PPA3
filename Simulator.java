@@ -11,10 +11,12 @@ public class Simulator
     private static final double DEER_CREATION_PROBABILITY = 0.05; 
     private static final double PLANT_CREATION_PROBABILITY = 1; 
     private static final double TRAP_CREATION_PROBABILITY = 0.0007; 
+    private static final double EARTHQUAKE_CREATION_PROBABILITY = 0.5; 
 
     private Field field;
     private int step;
     private final SimulatorView view;
+    private final Random rand;
 
     public Simulator()
     {
@@ -32,6 +34,7 @@ public class Simulator
         
         field = new Field(depth, width);
         view = new SimulatorView(depth, width);
+        rand = new Random();
 
         reset();
     }
@@ -54,10 +57,22 @@ public class Simulator
     {
         step++;
         Field nextFieldState = new Field(field.getDepth(), field.getWidth());
+        Earthquake earthquake = null;
+
+        if (rand.nextDouble() < EARTHQUAKE_CREATION_PROBABILITY) {
+            int x = rand.nextInt(field.getDepth());
+            int y = rand.nextInt(field.getWidth());
+            earthquake = new Earthquake(new Location(x, y));
+            System.out.println("🌍 Earthquake triggered at step " + step + ". At location: " + x + ", " + y);
+        }
 
         List<Animal> animals = field.getAnimals();
         for (Animal anAnimal : animals) {
-            anAnimal.act(field, nextFieldState);
+            if(earthquake != null && earthquake.locationWithinCalamity(anAnimal.getLocation())) {
+                anAnimal.setDead();
+            }else{
+                anAnimal.act(field, nextFieldState);
+            }
         }
 
         List<Trap> traps = field.getTraps();
@@ -67,10 +82,19 @@ public class Simulator
 
         List<Plant> plants = field.getPlants();
         for (Plant aPlant : plants) {
-            aPlant.act(field, nextFieldState);
+            if(earthquake != null && earthquake.locationWithinCalamity(aPlant.getLocation())) {
+                aPlant.setDead();
+            }else{
+                aPlant.act(field, nextFieldState);
+            }
         }
         
         field = nextFieldState;
+
+        // if (rand.nextDouble() < EARTHQUAKE_CREATION_PROBABILITY) {
+        //     System.out.println("🌍 Earthquake triggered at step " + step);
+        //     field.triggerEarthquake();
+        // }
 
         reportStats();
         view.showStatus(step, field);
