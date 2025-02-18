@@ -11,7 +11,7 @@ public class Simulator
     private static final double DEER_CREATION_PROBABILITY = 0.05; 
     private static final double PLANT_CREATION_PROBABILITY = 1; 
     private static final double TRAP_CREATION_PROBABILITY = 0.0007; 
-    private static final double EARTHQUAKE_CREATION_PROBABILITY = 0.5; 
+    private static final double EARTHQUAKE_CREATION_PROBABILITY = 0.05; 
     private static final int DEFORESTATION_INTERVAL = 3;
 
     private Field field;
