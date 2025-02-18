@@ -3,7 +3,7 @@ import java.util.*;
 public class Field {
     private static final Random rand = Randomizer.getRandom();
     
-    private final int depth, width;
+    private static int depth = 0, width = 0;
     private int currentDepth, currentWidth;
     private static final int DEFORESTATION_RATE = 1;
 
@@ -18,8 +18,12 @@ public class Field {
 
     public Field(int depth, int width)
     {
-        this.depth = depth;
-        this.width = width;
+        if (Field.depth == 0){
+            Field.depth = depth;
+        }
+        if (Field.width == 0){
+            Field.width = width;
+        }
         this.currentDepth = depth;
         this.currentWidth = width;
     }

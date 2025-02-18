@@ -16,5 +16,4 @@ public class Disease{
     public boolean animalDemise(){
         return rand.nextDouble() <= DEATH_PROBABILITY;
     }
-
 }

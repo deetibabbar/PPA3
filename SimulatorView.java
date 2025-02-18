@@ -79,9 +79,10 @@ public class SimulatorView extends JFrame {
                 Object animal = field.getAnimalAt(loc);
                 Plant plant = field.getPlantAt(loc);
                 Trap trap = field.getTrapAt(loc);
-
-                // Check if location is within the earthquake's affected radius
-                if (earthquake != null && earthquake.locationWithinCalamity(loc)) {
+                if (row > field.getCurrentDepth() || col > field.getCurrentWidth()){
+                    fieldView.drawMark(col, row, Color.BLACK);
+                }
+                else if (earthquake != null && earthquake.locationWithinCalamity(loc)) {
                     fieldView.drawMark(col, row, EARTHQUAKE_COLOR);  // Mark affected locations in red
                 } else {
                     if(trap != null){
