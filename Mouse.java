@@ -1,3 +1,4 @@
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,8 +9,10 @@ public class Mouse extends Animal
     private static final int MAX_AGE = 16;
     private static final double BREEDING_PROBABILITY = 0.25;
     private static final int MAX_LITTER_SIZE = 6;
+    private static final int PLANT_FOOD_LEVEL = 9;
     private static final Random rand = Randomizer.getRandom();
     private int age;
+    private int foodLevel;
 
     private Time time = new Time(0,0);
 
@@ -20,18 +23,36 @@ public class Mouse extends Animal
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
         }
+        foodLevel = rand.nextInt(PLANT_FOOD_LEVEL);
     }
     
     @Override
     public void act(Field currentField, Field nextFieldState)
     {
         incrementAge();
+        incrementHunger();
         if(isAlive()) {
             specialMovement(currentField, nextFieldState, step);
+            if (isDiseased()){
+                incrementDisease();
+                diseaseDeath();
+            }
             List<Location> freeLocations = 
                 nextFieldState.getFreeAdjacentLocations(getLocation());
             if(!freeLocations.isEmpty()) {
                 giveBirth(nextFieldState, freeLocations);
+                disease();
+                spreadDisease(currentField);
+            }
+
+            Location nextLocation = findFood(currentField);
+            if(nextLocation == null && ! freeLocations.isEmpty()) {
+                nextLocation = freeLocations.remove(0);
+            }
+            if(! freeLocations.isEmpty()) {
+                nextLocation = freeLocations.get(0);
+                setLocation(nextLocation);
+                nextFieldState.placeAnimal(this, nextLocation);
             }
             else {
                 setDead();
@@ -52,6 +73,14 @@ public class Mouse extends Animal
     {
         age++;
         if(age > MAX_AGE) {
+            setDead();
+        }
+    }
+
+    private void incrementHunger()
+    {
+        foodLevel--;
+        if(foodLevel <= 0) {
             setDead();
         }
     }
@@ -98,6 +127,22 @@ public class Mouse extends Animal
     private boolean canBreed()
     {
         return age >= BREEDING_AGE;
+    }
+
+    public Location findFood(Field field){
+        List<Location> adjacent = field.getAdjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        Location foodLocation = null;
+        while(foodLocation == null && it.hasNext()) {
+            Location loc = it.next();
+            Plant plant = field.getPlantAt(loc);  
+            if(plant != null && plant.isAlive()) {
+                plant.setDead();
+                foodLevel = PLANT_FOOD_LEVEL;
+                foodLocation = loc;
+            }
+        }
+    return foodLocation;
     }
 
     public void specialMovement(Field currentField, Field nextFieldState, int step)

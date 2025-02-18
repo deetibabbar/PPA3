@@ -1,3 +1,4 @@
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -7,8 +8,10 @@ public class Deer extends Animal
     private static final int MAX_AGE = 35;
     private static final double BREEDING_PROBABILITY = 0.08;
     private static final int MAX_LITTER_SIZE = 2;
+    private static final int PLANT_FOOD_LEVEL = 9;
     private static final Random rand = Randomizer.getRandom();
     private int age;
+    private int foodLevel;
 
     private Time time = new Time(0,0);
 
@@ -19,20 +22,32 @@ public class Deer extends Animal
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
         }
+        foodLevel = rand.nextInt(PLANT_FOOD_LEVEL);
     }
     
     @Override
     public void act(Field currentField, Field nextFieldState)
     {
         incrementAge();
+        incrementHunger();
         if(isAlive() && time.timeOfDay() == Time.timeOfDay.DAY) {
+            if (isDiseased()){
+                incrementDisease();
+                diseaseDeath();
+            }
             List<Location> freeLocations = 
                 nextFieldState.getFreeAdjacentLocations(getLocation());
             if(!freeLocations.isEmpty()) {
                 giveBirth(nextFieldState, freeLocations);
+                disease();
+                spreadDisease(currentField);
+            }
+            Location nextLocation = findFood(currentField);
+            if(nextLocation == null && ! freeLocations.isEmpty()) {
+                nextLocation = freeLocations.remove(0);
             }
             if(! freeLocations.isEmpty()) {
-                Location nextLocation = freeLocations.get(0);
+                nextLocation = freeLocations.get(0);
                 setLocation(nextLocation);
                 nextFieldState.placeAnimal(this, nextLocation);
             }
@@ -55,6 +70,14 @@ public class Deer extends Animal
     {
         age++;
         if(age > MAX_AGE) {
+            setDead();
+        }
+    }
+
+    private void incrementHunger()
+    {
+        foodLevel--;
+        if(foodLevel <= 0) {
             setDead();
         }
     }
@@ -99,5 +122,21 @@ public class Deer extends Animal
     private boolean canBreed()
     {
         return age >= BREEDING_AGE;
+    }
+
+    public Location findFood(Field field){
+        List<Location> adjacent = field.getAdjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        Location foodLocation = null;
+        while(foodLocation == null && it.hasNext()) {
+            Location loc = it.next();
+            Plant plant = field.getPlantAt(loc);  
+            if(plant != null && plant.isAlive()) {
+                plant.setDead();
+                foodLevel = PLANT_FOOD_LEVEL;
+                foodLocation = loc;
+            }
+        }
+    return foodLocation;
     }
 }

@@ -35,10 +35,16 @@ public class Cat extends Animal
         incrementHunger();
         if(isAlive()) {
             specialMovement(currentField, nextFieldState);
+            if (isDiseased()){
+                incrementDisease();
+                diseaseDeath();
+            }
             List<Location> freeLocations =
                     nextFieldState.getFreeAdjacentLocations(getLocation());
             if(! freeLocations.isEmpty()) {
                 giveBirth(nextFieldState, freeLocations);
+                disease();
+                spreadDisease(currentField);
             }
             Location nextLocation = findFood(currentField);
             if(nextLocation == null && ! freeLocations.isEmpty()) {

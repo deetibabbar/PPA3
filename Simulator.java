@@ -4,15 +4,20 @@ public class Simulator
 {
     private static final int DEFAULT_WIDTH = 130;
     private static final int DEFAULT_DEPTH = 130;
-    private static final double OWL_CREATION_PROBABILITY = 0.06;
-    private static final double MOUSE_CREATION_PROBABILITY = 0.07;   
-    private static final double CAT_CREATION_PROBABILITY = 0.07;
-    private static final double WOLF_CREATION_PROBABILITY = 0.05;
-    private static final double DEER_CREATION_PROBABILITY = 0.07; 
+    private static final double OWL_CREATION_PROBABILITY = 0.02;
+    private static final double MOUSE_CREATION_PROBABILITY = 0.06;   
+    private static final double CAT_CREATION_PROBABILITY = 0.05;
+    private static final double WOLF_CREATION_PROBABILITY = 0.07;
+    private static final double DEER_CREATION_PROBABILITY = 0.05; 
+    private static final double PLANT_CREATION_PROBABILITY = 1; 
+    private static final double TRAP_CREATION_PROBABILITY = 0.0007; 
+    private static final double EARTHQUAKE_CREATION_PROBABILITY = 0.05; 
+    private static final int DEFORESTATION_INTERVAL = 3;
 
     private Field field;
     private int step;
     private final SimulatorView view;
+    private final Random rand;
 
     private Time time = new Time(0, 0);
 
@@ -32,6 +37,7 @@ public class Simulator
         
         field = new Field(depth, width);
         view = new SimulatorView(depth, width);
+        rand = new Random();
 
         reset();
     }
@@ -54,24 +60,52 @@ public class Simulator
     {
         step++;
         time.setTime(step);
-        Field nextFieldState = new Field(field.getDepth(), field.getWidth());
+        if (step % DEFORESTATION_INTERVAL == 0){
+            field.triggerDeforestation();
+        }
+        Field nextFieldState = new Field(field.getCurrentDepth(), field.getCurrentWidth());
+        Earthquake earthquake = null;
+
+        if (rand.nextDouble() < EARTHQUAKE_CREATION_PROBABILITY) {
+            int x = rand.nextInt(field.getCurrentDepth());
+            int y = rand.nextInt(field.getCurrentWidth());
+            earthquake = new Earthquake(new Location(x, y));
+            System.out.println("--------Earthquake triggered at step " + step + ". At location: " + x + ", " + y);
+        }
 
         List<Animal> animals = field.getAnimals();
         for (Animal anAnimal : animals) {
-            anAnimal.act(field, nextFieldState);
+            if(earthquake != null && earthquake.locationWithinCalamity(anAnimal.getLocation())) {
+                anAnimal.setDead();
+            }else{
+                anAnimal.act(field, nextFieldState);
+            }
+        }
+
+        List<Trap> traps = field.getTraps();
+        for (Trap aTrap : traps) {
+            aTrap.act(field, nextFieldState);
+        }
+
+        List<Plant> plants = field.getPlants();
+        for (Plant aPlant : plants) {
+            if(earthquake != null && earthquake.locationWithinCalamity(aPlant.getLocation())) {
+                aPlant.setDead();
+            }else{
+                aPlant.act(field, nextFieldState);
+            }
         }
         
         field = nextFieldState;
-
         reportStats();
-        view.showStatus(step, field, time.getTime(), time.getDay());
+        view.showStatus(step, field, earthquake, time.getTime(), time.getDay());
     }
         
     public void reset()
     {
         step = 0;
         populate();
-        view.showStatus(step, field, time.getTime(), time.getDay());
+        view.showStatus(step, field, null, time.getTime(), time.getDay());
     }
     
     private void populate()
@@ -80,7 +114,12 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= OWL_CREATION_PROBABILITY) {
+                if(rand.nextDouble() <= TRAP_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Trap trap = new Trap(location);
+                    field.placeTrap(trap, location);
+                }
+                else if(rand.nextDouble() <= OWL_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
                     Owl owl = new Owl(true, location);
                     field.placeAnimal(owl, location);
@@ -104,6 +143,11 @@ public class Simulator
                     Location location = new Location(row, col);
                     Deer deer = new Deer(true, location);
                     field.placeAnimal(deer, location);
+                }
+                else if(rand.nextDouble() <= PLANT_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Plant plant = new Plant(location);
+                    field.placePlant(plant, location);
                 }
             }
         }
@@ -130,7 +174,7 @@ public class Simulator
 
     public static void main(String[] args) {
         Simulator sim1 = new Simulator();
-        sim1.runLongSimulation();
+        sim1.simulate(700);
     }
 }
 
