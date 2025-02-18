@@ -1,35 +1,67 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class Field {
     private static final Random rand = Randomizer.getRandom();
     
     private final int depth, width;
+    private int currentDepth, currentWidth;
+    private static final int DEFORESTATION_RATE = 1;
+
     private final Map<Location, Animal> field = new HashMap<>();
+    private final Map<Location, Plant> fieldPlant = new HashMap<>();
+    private final Map<Location, Trap> fieldTrap = new HashMap<>();
 
     private final List<Animal> animals = new ArrayList<>();
+    private final List<Plant> plants = new ArrayList<>();
+    private final List<Trap> traps = new ArrayList<>();
+
 
     public Field(int depth, int width)
     {
         this.depth = depth;
         this.width = width;
+        this.currentDepth = depth;
+        this.currentWidth = width;
     }
 
     public void placeAnimal(Animal anAnimal, Location location)
     {
         assert location != null;
         Object other = field.get(location);
-        if(other != null) {
-            animals.remove(other);
+        if(other != null && other instanceof Animal animal) {
+            animals.remove(animal);
         }
-        field.put(location, anAnimal);
-        animals.add(anAnimal);
+        else if (other == null || other instanceof Plant){
+            field.put(location, anAnimal);
+            animals.add(anAnimal);
+        }
+        else if (other instanceof Trap){
+            animals.remove(anAnimal);
+            anAnimal.setDead();
+        }
+    }
+
+    public void placePlant(Plant plant, Location location){
+        assert location != null;
+        Object other = field.get(location);
+        if (other != null && other instanceof Trap){
+            plants.remove(plant);
+        }
+        fieldPlant.put(location, plant);
+        plants.add(plant);
+    }
+
+    public void placeTrap(Trap trap, Location location){
+        assert location != null;
+        Object other = field.get(location);
+        if (other != null && other instanceof Animal animal){
+            animals.remove(animal);
+        }
+        else if (other != null && other instanceof Plant plant){
+            plants.remove(plant);
+        }
+        fieldTrap.put(location, trap);
+        traps.add(trap);
     }
     
     public Animal getAnimalAt(Location location)
@@ -37,16 +69,28 @@ public class Field {
         return field.get(location);
     }
 
+    public Plant getPlantAt(Location location){
+        return fieldPlant.get(location);
+    }
+
+    public Trap getTrapAt(Location location){
+        return fieldTrap.get(location);
+    }
+
+    public boolean containsTrap(Location location){
+        return fieldTrap.containsKey(location);
+    }
+
     public List<Location> getFreeAdjacentLocations(Location location)
     {
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = getAdjacentLocations(location);
         for(Location next : adjacent) {
-            Animal anAnimal = field.get(next);
-            if(anAnimal == null) {
+            Object item = field.get(next);
+            if(item instanceof Plant || item == null) {
                 free.add(next);
             }
-            else if(!anAnimal.isAlive()) {
+            else if(item instanceof Animal anAnimal && !anAnimal.isAlive()) {
                 free.add(next);
             }
         }
@@ -61,11 +105,11 @@ public class Field {
             int col = location.col();
             for(int roffset = -1; roffset <= 1; roffset++) {
                 int nextRow = row + roffset;
-                if(nextRow >= 0 && nextRow < depth) {
+                if(nextRow >= 0 && nextRow < currentDepth) {
                     for(int coffset = -1; coffset <= 1; coffset++) {
                         int nextCol = col + coffset;
                         // Exclude invalid locations and the original location.
-                        if(nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
+                        if(nextCol >= 0 && nextCol < currentWidth && (roffset != 0 || coffset != 0)) {
                             locations.add(new Location(nextRow, nextCol));
                         }
                     }
@@ -81,29 +125,33 @@ public class Field {
     {
         int numOwls = 0, numMice = 0, numDeers = 0, numCats = 0, numWolves = 0;
         for(Animal anAnimal : field.values()) {
-            if(anAnimal instanceof Owl owl) {
-                if(owl.isAlive()) {
-                    numOwls++;
+            switch (anAnimal) {
+                case Owl owl -> {
+                    if(owl.isAlive()) {
+                        numOwls++;
+                    }
                 }
-            }
-            else if(anAnimal instanceof Mouse mouse) {
-                if(mouse.isAlive()) {
-                    numMice++;
+                case Mouse mouse -> {
+                    if(mouse.isAlive()) {
+                        numMice++;
+                    }
                 }
-            }
-            else if(anAnimal instanceof Deer deer) {
-                if(deer.isAlive()) {
-                    numDeers++;
+                case Deer deer -> {
+                    if(deer.isAlive()) {
+                        numDeers++;
+                    }
                 }
-            }
-            else if(anAnimal instanceof Cat cat) {
-                if(cat.isAlive()) {
-                    numCats++;
+                case Cat cat -> {
+                    if(cat.isAlive()) {
+                        numCats++;
+                    }
                 }
-            }
-            else if(anAnimal instanceof Wolf wolf) {
-                if(wolf.isAlive()) {
-                    numWolves++;
+                case Wolf wolf -> {
+                    if(wolf.isAlive()) {
+                        numWolves++;
+                    }
+                }
+                default -> {
                 }
             }
         }
@@ -118,6 +166,30 @@ public class Field {
     {
         field.clear();
     }
+
+    public void clear(Location location) {
+        // Remove any animal, plant, or trap at this location
+        field.remove(location);
+        fieldPlant.remove(location);
+        fieldTrap.remove(location);
+
+        // Remove from the lists, checking for null locations
+        animals.removeIf(animal -> {
+            Location loc = animal.getLocation();
+            return loc != null && loc.equals(location);
+        });
+
+        plants.removeIf(plant -> {
+            Location loc = plant.getLocation();
+            return loc != null && loc.equals(location);
+        });
+
+        traps.removeIf(trap -> {
+            Location loc = trap.getLocation();
+            return loc != null && loc.equals(location);
+        });
+    }
+
 
     public boolean isViable()
     {
@@ -156,11 +228,21 @@ public class Field {
             }
         }
         return mouseFound && owlFound && deerFound && catFound && wolfFound;
-    }
+    }   
     
     public List<Animal> getAnimals()
     {
         return animals;
+    }
+
+    public List<Plant> getPlants()
+    {
+        return plants;
+    }
+
+    public List<Trap> getTraps()
+    {
+        return traps;
     }
 
     public int getDepth()
@@ -171,5 +253,36 @@ public class Field {
     public int getWidth()
     {
         return width;
+    }
+
+    public int getCurrentDepth()
+    {
+        return currentDepth;
+    }
+    
+    public int getCurrentWidth()
+    {
+        return currentWidth;
+    }
+
+    public void triggerDeforestation(){
+        if (currentDepth > 2 * DEFORESTATION_RATE && currentWidth > 2 * DEFORESTATION_RATE){
+            currentDepth -= DEFORESTATION_RATE;
+            currentWidth -= DEFORESTATION_RATE;
+        }
+
+        animals.removeIf(animal -> !isInsideBounds(animal.getLocation()));
+        plants.removeIf(plant -> !isInsideBounds(plant.getLocation()));
+        traps.removeIf(trap -> !isInsideBounds(trap.getLocation()));
+        
+    }
+
+    public boolean isInsideBounds(Location location){
+        if (location == null){
+            return false;
+        }
+        else{
+        return location.row() >= 0 && location.row() < currentDepth && location.col() >= 0 && location.col() < currentWidth;
+        }
     }
 }

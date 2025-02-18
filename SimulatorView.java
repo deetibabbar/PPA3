@@ -1,12 +1,12 @@
 import java.awt.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import javax.swing.*;
 
 public class SimulatorView extends JFrame {
 
     private static final Color EMPTY_COLOR = Color.white;
     private static final Color UNKNOWN_COLOR = Color.gray;
+    private static final Color EARTHQUAKE_COLOR = Color.red;  // Color for affected area
 
     private final String STEP_PREFIX = "Step: ";
     private final String POPULATION_PREFIX = "Population: ";
@@ -21,13 +21,15 @@ public class SimulatorView extends JFrame {
     {
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
+        setColor(Trap.class, Color.black);
         setColor(Mouse.class, Color.orange);
         setColor(Owl.class, Color.magenta);
         setColor(Cat.class, Color.cyan);
         setColor(Deer.class, Color.yellow);
-        setColor(Wolf.class, Color.green);
+        setColor(Wolf.class, Color.lightGray);
+        setColor(Plant.class, Color.green);
 
-        setTitle("Fox and Rabbit Simulation");
+        setTitle("Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
         
@@ -48,7 +50,6 @@ public class SimulatorView extends JFrame {
         colors.put(animalClass, color);
     }
 
-    
     private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
@@ -60,7 +61,7 @@ public class SimulatorView extends JFrame {
         }
     }
 
-    public void showStatus(int step, Field field)
+    public void showStatus(int step, Field field, Earthquake earthquake)
     {
         if(!isVisible()) {
             setVisible(true);
@@ -71,15 +72,31 @@ public class SimulatorView extends JFrame {
         
         fieldView.preparePaint();
 
+        // Loop through all locations in the field
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getAnimalAt(new Location(row, col));
-                if(animal != null) {
-                    stats.incrementCount(animal.getClass());
-                    fieldView.drawMark(col, row, getColor(animal.getClass()));
-                }
-                else {
-                    fieldView.drawMark(col, row, EMPTY_COLOR);
+                Location loc = new Location(row, col);
+                Object animal = field.getAnimalAt(loc);
+                Plant plant = field.getPlantAt(loc);
+                Trap trap = field.getTrapAt(loc);
+
+                // Check if location is within the earthquake's affected radius
+                if (earthquake != null && earthquake.locationWithinCalamity(loc)) {
+                    fieldView.drawMark(col, row, EARTHQUAKE_COLOR);  // Mark affected locations in red
+                } else {
+                    if(trap != null){
+                        fieldView.drawMark(col, row, getColor(Trap.class));
+                    }
+                    else if(animal != null) {
+                        stats.incrementCount(animal.getClass());
+                        fieldView.drawMark(col, row, getColor(animal.getClass()));
+                    }
+                    else if(plant != null){
+                        fieldView.drawMark(col, row, getColor(Plant.class));
+                    }
+                    else {
+                        fieldView.drawMark(col, row, EMPTY_COLOR);
+                    }
                 }
             }
         }
@@ -93,7 +110,7 @@ public class SimulatorView extends JFrame {
     {
         return stats.isViable(field);
     }
-    
+
     private class FieldView extends JPanel
     {
         private final int GRID_VIEW_SCALING_FACTOR = 6;
@@ -155,4 +172,5 @@ public class SimulatorView extends JFrame {
             }
         }
     }
+
 }

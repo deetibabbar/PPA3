@@ -32,14 +32,20 @@ public class Owl extends Animal
         incrementAge();
         incrementHunger();
         if(isAlive()) {
+            if (isDiseased()){
+                incrementDisease();
+                diseaseDeath();
+            }
             List<Location> freeLocations =
                     nextFieldState.getFreeAdjacentLocations(getLocation());
             if(! freeLocations.isEmpty()) {
                 giveBirth(nextFieldState, freeLocations);
+                disease();
+                spreadDisease(currentField);
             }
-
+      
             Location nextLocation = findFood(currentField);
-            if(nextLocation == null && ! freeLocations.isEmpty()) {
+            if(nextLocation == null && !freeLocations.isEmpty()) {
           
                 nextLocation = freeLocations.remove(0);
             }
@@ -88,18 +94,25 @@ public class Owl extends Animal
         while(foodLocation == null && it.hasNext()) {
             Location loc = it.next();
             Animal animal = field.getAnimalAt(loc);
-            if(animal instanceof Mouse mouse) {
-                if(mouse.isAlive()) {
-                    mouse.setDead();
-                    foodLevel = MOUSE_FOOD_VALUE;
-                    foodLocation = loc;
-                }
+            if (animal == null){
+                continue;
             }
-            else if(animal instanceof Cat cat) {
-                if(cat.isAlive()) {
-                    cat.setDead();
-                    foodLevel = CAT_FOOD_VALUE;
-                    foodLocation = loc;
+            switch (animal) {
+                case Mouse mouse -> {
+                    if(mouse.isAlive()) {
+                        mouse.setDead();
+                        foodLevel = MOUSE_FOOD_VALUE;
+                        foodLocation = loc;
+                    }
+                }
+                case Cat cat -> {
+                    if(cat.isAlive()) {
+                        cat.setDead();
+                        foodLevel = CAT_FOOD_VALUE;
+                        foodLocation = loc;
+                    }
+                }
+                default -> {
                 }
             }
         }
