@@ -12,6 +12,7 @@ public class Simulator
     private static final double PLANT_CREATION_PROBABILITY = 1; 
     private static final double TRAP_CREATION_PROBABILITY = 0.0007; 
     private static final double EARTHQUAKE_CREATION_PROBABILITY = 0.5; 
+    private static final int DEFORESTATION_INTERVAL = 3;
 
     private Field field;
     private int step;
@@ -56,14 +57,17 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
-        Field nextFieldState = new Field(field.getDepth(), field.getWidth());
+        if (step % DEFORESTATION_INTERVAL == 0){
+            field.triggerDeforestation();
+        }
+        Field nextFieldState = new Field(field.getCurrentDepth(), field.getCurrentWidth());
         Earthquake earthquake = null;
 
         if (rand.nextDouble() < EARTHQUAKE_CREATION_PROBABILITY) {
-            int x = rand.nextInt(field.getDepth());
-            int y = rand.nextInt(field.getWidth());
+            int x = rand.nextInt(field.getCurrentDepth());
+            int y = rand.nextInt(field.getCurrentWidth());
             earthquake = new Earthquake(new Location(x, y));
-            System.out.println("🌍 Earthquake triggered at step " + step + ". At location: " + x + ", " + y);
+            System.out.println("--------Earthquake triggered at step " + step + ". At location: " + x + ", " + y);
         }
 
         List<Animal> animals = field.getAnimals();
@@ -90,21 +94,15 @@ public class Simulator
         }
         
         field = nextFieldState;
-
-        // if (rand.nextDouble() < EARTHQUAKE_CREATION_PROBABILITY) {
-        //     System.out.println("🌍 Earthquake triggered at step " + step);
-        //     field.triggerEarthquake();
-        // }
-
         reportStats();
-        view.showStatus(step, field);
+        view.showStatus(step, field, earthquake);
     }
         
     public void reset()
     {
         step = 0;
         populate();
-        view.showStatus(step, field);
+        view.showStatus(step, field, null);
     }
     
     private void populate()

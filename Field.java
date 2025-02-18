@@ -4,6 +4,9 @@ public class Field {
     private static final Random rand = Randomizer.getRandom();
     
     private final int depth, width;
+    private int currentDepth, currentWidth;
+    private static final int DEFORESTATION_RATE = 1;
+
     private final Map<Location, Animal> field = new HashMap<>();
     private final Map<Location, Plant> fieldPlant = new HashMap<>();
     private final Map<Location, Trap> fieldTrap = new HashMap<>();
@@ -11,14 +14,14 @@ public class Field {
     private final List<Animal> animals = new ArrayList<>();
     private final List<Plant> plants = new ArrayList<>();
     private final List<Trap> traps = new ArrayList<>();
-    private final Set<Location> earthquakeAffected = new HashSet<>();
-    private static final int MAX_EARTHQUAKE_RADIUS = 9;
 
 
     public Field(int depth, int width)
     {
         this.depth = depth;
         this.width = width;
+        this.currentDepth = depth;
+        this.currentWidth = width;
     }
 
     public void placeAnimal(Animal anAnimal, Location location)
@@ -102,11 +105,11 @@ public class Field {
             int col = location.col();
             for(int roffset = -1; roffset <= 1; roffset++) {
                 int nextRow = row + roffset;
-                if(nextRow >= 0 && nextRow < depth) {
+                if(nextRow >= 0 && nextRow < currentDepth) {
                     for(int coffset = -1; coffset <= 1; coffset++) {
                         int nextCol = col + coffset;
                         // Exclude invalid locations and the original location.
-                        if(nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
+                        if(nextCol >= 0 && nextCol < currentWidth && (roffset != 0 || coffset != 0)) {
                             locations.add(new Location(nextRow, nextCol));
                         }
                     }
@@ -225,37 +228,7 @@ public class Field {
             }
         }
         return mouseFound && owlFound && deerFound && catFound && wolfFound;
-    }
-
-    // public void triggerEarthquake(){
-    //     earthquakeAffected.clear();
-
-    //     Random rand = new Random();
-    //     int epicenterX = rand.nextInt(width);
-    //     int epicenterY = rand.nextInt(depth);
-    //     Location epicenter = new Location(epicenterX, epicenterY);
-    //     int radius = rand.nextInt(MAX_EARTHQUAKE_RADIUS) + 2;
-
-    //     for (int row = 0; row < depth; row++) {
-    //         for (int col = 0; col < width; col++) {
-    //             Location loc = new Location(row, col);
-    //             if (isWithinRadius(epicenter, loc, radius)) {
-    //                 clear(loc); 
-    //                 earthquakeAffected.add(loc);
-    //             }
-    //         }
-    //     }   
-    // }
-
-    // private boolean isWithinRadius(Location epicenter, Location loc, int radius) {
-    //     int dx = epicenter.row() - loc.row();
-    //     int dy = epicenter.col() - loc.col();
-    //     return Math.sqrt(dx * dx + dy * dy) <= radius;
-    // }
-
-    // public boolean wasHitByEarthquake(Location loc) {
-    //     return earthquakeAffected.contains(loc);
-    // }
+    }   
     
     public List<Animal> getAnimals()
     {
@@ -280,5 +253,36 @@ public class Field {
     public int getWidth()
     {
         return width;
+    }
+
+    public int getCurrentDepth()
+    {
+        return currentDepth;
+    }
+    
+    public int getCurrentWidth()
+    {
+        return currentWidth;
+    }
+
+    public void triggerDeforestation(){
+        if (currentDepth > 2 * DEFORESTATION_RATE && currentWidth > 2 * DEFORESTATION_RATE){
+            currentDepth -= DEFORESTATION_RATE;
+            currentWidth -= DEFORESTATION_RATE;
+        }
+
+        animals.removeIf(animal -> !isInsideBounds(animal.getLocation()));
+        plants.removeIf(plant -> !isInsideBounds(plant.getLocation()));
+        traps.removeIf(trap -> !isInsideBounds(trap.getLocation()));
+        
+    }
+
+    public boolean isInsideBounds(Location location){
+        if (location == null){
+            return false;
+        }
+        else{
+        return location.row() >= 0 && location.row() < currentDepth && location.col() >= 0 && location.col() < currentWidth;
+        }
     }
 }

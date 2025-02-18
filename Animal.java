@@ -47,7 +47,6 @@ public abstract class Animal {
     protected void disease(){
         if (!isDiseased() && (rand.nextDouble() <= DISEASE_PROBABILITY)){
             disease = new Disease();
-            System.out.println("animal is diseased");
         }
     }
 
@@ -59,20 +58,18 @@ public abstract class Animal {
                 if(animal!=null && this.getClass().equals(animal.getClass())) {
                     if (rand.nextDouble() <= CONTAGIOUS_PROBABILITY ) {
                         animal.passDisease();
-                        System.out.println("animal spread a disease");
                     }
                 }
             }
         }
     }
 
-    protected void passDisease(){
+    protected void passDisease() {
         this.disease = new Disease();
     }
 
     protected void diseaseDeath(){
         if (disease.diseaseExpired(this) && disease.animalDemise()){
-            System.out.println("animal died due to disease");
             setDead();
         }
         else {

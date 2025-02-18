@@ -21,7 +21,6 @@ public class Earthquake implements Calamity {
         if(location == null) {
             return false;
         }
-        // System.out.println("Checking location: " + "<" + location.row() + ", " + location.col() + ">");
         int x = location.row();
         int y = location.col();
         int ex = epicenter.row();

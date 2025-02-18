@@ -4,10 +4,10 @@ import java.util.Random;
 
 public class Wolf extends Animal
 {
-    private static final int BREEDING_AGE = 9;
+    private static final int BREEDING_AGE = 5;
     private static final int MAX_AGE = 120;
-    private static final double BREEDING_PROBABILITY = 0.18;
-    private static final int MAX_LITTER_SIZE = 5;
+    private static final double BREEDING_PROBABILITY = 0.25;
+    private static final int MAX_LITTER_SIZE = 8;
     private static final int DEER_FOOD_VALUE = 9;
     private static final Random rand = Randomizer.getRandom();
     private int age;

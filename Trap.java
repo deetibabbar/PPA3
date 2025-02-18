@@ -19,8 +19,12 @@ public class Trap{
         return location;
     }
     
-    protected void setLocation(Location location)
+    public void setLocation(Location location)
     {
         this.location = location;
+    }
+
+    public void removeTrap(Location location){
+        this.location = null;
     }
 }
