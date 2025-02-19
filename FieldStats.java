@@ -1,8 +1,7 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class FieldStats {
-    // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
+    // Counters for each type of entity (cat, mouse etc.) in the simulation.
     private final Map<Class<?>, Counter1> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;

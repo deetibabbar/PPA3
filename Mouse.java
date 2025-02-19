@@ -1,21 +1,43 @@
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
+/**
+ * A simple model of a mouse
+ * Mouse age, move, breed, and die.
+ * 
+ * @author Deeti Babbar and Hannan Nur
+ * @version 18.02.2025
+ */
 public class Mouse extends Animal
 {
+    // Characteristics shared by all mice (class variables).
+    // The age at which a mouse can start to breed.
     private static final int BREEDING_AGE = 4;
-    private static final int MAX_AGE = 16;
-    private static final double BREEDING_PROBABILITY = 0.25;
-    private static final int MAX_LITTER_SIZE = 6;
-    private static final int PLANT_FOOD_LEVEL = 9;
+    // The age to which a mouse can live.
+    private static final int MAX_AGE = 18;
+    // The likelihood of a mouse breeding.
+    private static final double BREEDING_PROBABILITY = 0.16;
+    // The maximum number of births.
+    private static final int MAX_LITTER_SIZE = 4;
+    // The food value of a single plant. In effect, this is the
+    // number of steps a mouse can go before it has to eat again.
+    private static final int PLANT_FOOD_LEVEL = 15;
+    // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
+
+    // Individual characteristics (instance fields).
+
+    // The mouse's age.
     private int age;
+    // The mouse's food level, which is increased by eating plants.
     private int foodLevel;
 
-    private Time time = new Time(0,0);
-
+    /**
+     * Create a mouse. A mouse can be created as a new born (age zero
+     * and not hungry) or with a random age and a hunger level of a plant's food value.
+     * 
+     * @param randomAge If true, the mouse will have random age and a hunger level.
+     * @param location The location within the field.
+     */
     public Mouse(boolean randomAge, Location location)
     {
         super(location);
@@ -23,36 +45,55 @@ public class Mouse extends Animal
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
         }
-        foodLevel = rand.nextInt(PLANT_FOOD_LEVEL);
+        foodLevel = PLANT_FOOD_LEVEL;
     }
     
+    /**
+     * This is what the mouse does most of the time - it runs 
+     * around in the morning and in the afternoon.
+     * But running is restricted when it is the afternoon.
+     * Sometimes it will breed or die of old age.
+     * @param currentField The field occupied.
+     * @param nextFieldState The updated field.
+     */
     @Override
     public void act(Field currentField, Field nextFieldState)
     {
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            specialMovement(currentField, nextFieldState, step);
+            // Increment how long the mouse has been infected 
+            // and whether they should die from the disease.
             if (isDiseased()){
                 incrementDisease();
                 diseaseDeath();
             }
             List<Location> freeLocations = 
                 nextFieldState.getFreeAdjacentLocations(getLocation());
+            
             if(!freeLocations.isEmpty()) {
-                giveBirth(nextFieldState, freeLocations);
+                giveBirth(currentField, nextFieldState, freeLocations);
                 disease();
                 spreadDisease(currentField);
+                // There is a 50% chance of moving to a free location in the afternoon
+                if (!isActive() && rand.nextBoolean()) {
+                    setLocation(getLocation());
+                    nextFieldState.placeAnimal(this, getLocation());
+                }
             }
-
-            Location nextLocation = findFood(currentField);
-            if(nextLocation == null && ! freeLocations.isEmpty()) {
-                nextLocation = freeLocations.remove(0);
-            }
-            if(! freeLocations.isEmpty()) {
-                nextLocation = freeLocations.get(0);
+            // Try to move into a free location.
+            if(!freeLocations.isEmpty()) {
+                Location nextLocation = freeLocations.get(0);
                 setLocation(nextLocation);
                 nextFieldState.placeAnimal(this, nextLocation);
+            }
+            // Move towards a source of food if found.
+            if(!freeLocations.isEmpty()) {
+                Location nextLocation = findFood(currentField);
+                if(nextLocation == null && ! freeLocations.isEmpty()) {
+                    // No food found - try to move to a free location.
+                    nextLocation = freeLocations.remove(0);
+                }
             }
             else {
                 setDead();
@@ -69,6 +110,9 @@ public class Mouse extends Animal
                 '}';
     }
 
+    /**
+     * Increase the age. This could result in the mouse's death.
+     */
     private void incrementAge()
     {
         age++;
@@ -77,6 +121,9 @@ public class Mouse extends Animal
         }
     }
 
+    /**
+     * Make this mouse more hungry. This could result in the mouse's death.
+     */
     private void incrementHunger()
     {
         foodLevel--;
@@ -85,11 +132,18 @@ public class Mouse extends Animal
         }
     }
     
-    private void giveBirth(Field nextFieldState, List<Location> freeLocations)
+    /**
+     * Check whether this mouse is to give birth at this step.
+     * New births will be made into free adjacent locations.
+     * @param currentField The field currently occupied
+     * @param nextFieldState The field that stores the adjacent location and the newborn mouse.
+     * @param freeLocations The locations that are free in the current field.
+     */
+    private void giveBirth(Field currentField, Field nextFieldState, List<Location> freeLocations)
     {
-        // New rabbits are born into adjacent locations.
+        // New mouse are born into adjacent locations.
         // Get a list of adjacent free locations.
-        int births = breed(nextFieldState);
+        int births = breed(currentField);
         if(births > 0) {
             for (int b = 0; b < births && !freeLocations.isEmpty(); b++) {
                 Location loc = freeLocations.remove(0);
@@ -98,39 +152,50 @@ public class Mouse extends Animal
             }
         }
     }
-        
-    // private int breed()
-    // {
-    //     int births;
-    //     if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-    //         births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-    //     }
-    //     else {
-    //         births = 0;
-    //     }
-    //     return births;
-    // }
-
-    private int breed(Field field)
+    
+    /**
+     * Generate a number representing the number of births,
+     * if it can breed.
+     * @param field The field currently occupied
+     * @return The number of births (may be zero).
+     */
+    private int breed(Field currentField)
     {
-        int births = 0;
-        if (!genderCheck(field))
+        int births;
+        if(canBreed(currentField) && rand.nextDouble() <= BREEDING_PROBABILITY) 
         {
-            if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) 
-            {
-                births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-            }   
+            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
+        }
+        else {
+            // no breeding occurs
+            births = 0;
         }
         return births;
     }
 
-    private boolean canBreed()
+    /**
+     * A mouse can breed if it has reached the breeding age
+     * and of opposite gender
+     * @param field The field occupied by the mouse
+     */
+    private boolean canBreed(Field field)
     {
-        return age >= BREEDING_AGE;
+        if (age >= BREEDING_AGE) {
+            if (genderCheck(field)){
+                return true;
+            }
+        }
+        return false;
     }
 
+    /**
+     * Look for plant adjacent to the current location.
+     * Only the first live plant is eaten.
+     * @param field The field currently occupied.
+     * @return Where food was found, or null if it wasn't.
+     */
     public Location findFood(Field field){
-        List<Location> adjacent = field.getAdjacentLocations(getLocation());
+        List<Location> adjacent = field.getAdjacentLocations(getLocation(), 1);
         Iterator<Location> it = adjacent.iterator();
         Location foodLocation = null;
         while(foodLocation == null && it.hasNext()) {
@@ -142,20 +207,17 @@ public class Mouse extends Animal
                 foodLocation = loc;
             }
         }
-    return foodLocation;
+        return foodLocation;
     }
 
-    public void specialMovement(Field currentField, Field nextFieldState, int step)
+    /**
+     * A mouse is active in the morning and at night.
+     * @return true If it is the morning and night.
+     */
+    protected boolean isActive()
     {
-        if (time.timeOfDay() == Time.timeOfDay.NIGHT && step % 2 == 0)
-        {
-            List<Location> freeLocations = 
-                nextFieldState.getFreeAdjacentLocations(getLocation());
-            if(! freeLocations.isEmpty()) {
-                Location nextLocation = freeLocations.get(0);
-                setLocation(nextLocation);
-                nextFieldState.placeAnimal(this, nextLocation);
-            }
-        }
+        Time time = Simulator.getCurrentTime();
+        int hour = time.getTime();
+        return time.getTimeOfDay(hour) != TimeOfDay.AFTERNOON;
     }
 }

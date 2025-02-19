@@ -1,4 +1,14 @@
-public class Counter1 {
+/**
+ * Provide a counter for a participant in the simulation.
+ * This includes an identifying string and a count of how
+ * many participants of this type currently exist within 
+ * the simulation.
+ * 
+ * @author David J. Barnes and Michael Kölling
+ * @version 7.0
+ */
+public class Counter1 
+{
     // A name for this type of simulation participant
     private final String name;
     // How many of this type exist in the simulation.
@@ -6,7 +16,7 @@ public class Counter1 {
 
     /**
      * Provide a name for one of the simulation types.
-     * @param name  A name, e.g. "Fox".
+     * @param name  A name, e.g. "Cat".
      */
     public Counter1(String name)
     {
